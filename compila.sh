@@ -15,3 +15,7 @@ rm lex.yy.c
 rm scanner.output
 rm scanner
 rm util.o
+rm analyze.o
+rm cgen.o
+rm code.o
+rm symtab.o
