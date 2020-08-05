@@ -1,17 +1,63 @@
 #include "globals.h"
 #include "symtab.h"
-#include "code.h"
 #include "cgen.h"
 
+void genStmt(TreeNode *tree){
+
+  switch(tree -> kind.stmt){
+    case ifK:
+    break;
+    case whileK:
+    break;
+    case assignK:
+    break;
+    case varK:
+    break;
+    case funcK:
+    break;
+    case callK:
+    break;
+    case returnK:
+    break;
+    case numK:
+    break;
+    case paramK:
+    break;
+    case vectStmtK:
+    break;
+    
+  }
+
+}
+
+void genExp(TreeNode *tree){
+
+  switch(tree -> kind.exp){
+    case opK:
+    break;
+    case constK:
+    break;
+    case idK:
+    break;
+    case vectK:
+    break;
+    case vectIndexK:
+    break;
+    case typeK:
+    printf("OLA CARAIO");
+    break;
+
+  }
+}
 
 static void cGen( TreeNode * tree){ 
 	if (tree != NULL){ 
 		switch (tree->nodekind) {
       		case statementK:
-        		//genStmt(tree);
+        		genStmt(tree);
         		break;
       		case expressionK:
-        		//genExp(tree);
+        		genExp(tree);
         		break;
       		default:
         		break;
@@ -24,16 +70,7 @@ void codeGen(TreeNode * syntaxTree, char * codefile)
 {  char * s = malloc(strlen(codefile)+7);
    strcpy(s,"File: ");
    strcat(s,codefile);
-   emitComment("TINY Compilation to TM Code");
-   emitComment(s);
-   /* generate standard prelude */
-   emitComment("Standard prelude:");
-   emitRM("LD",mp,0,ac,"load maxaddress from location 0");
-   emitRM("ST",ac,0,ac,"clear location 0");
-   emitComment("End of standard prelude.");
-   /* generate code for TINY program */
    cGen(syntaxTree);
-   /* finish */
-   emitComment("End of execution.");
-   
+
 }
+

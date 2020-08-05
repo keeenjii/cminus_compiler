@@ -39,7 +39,7 @@ typedef enum {
 	} NodeKind;
 	
 typedef enum {
-	ifK, whileK, assignK, varK, funcK, callK, returnK, numk, paramK, vectStmtK
+	ifK, whileK, assignK, varK, funcK, callK, returnK, numK, paramK, vectStmtK
 	} StmtKind;
 	
 typedef enum {
