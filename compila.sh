@@ -3,7 +3,7 @@ flex scanner.l
 bison -d -v scanner.y
 
 gcc -c *.c
-gcc -o scanner *.o 
+gcc -o scanner *.o -lm
 ./scanner entrada2.txt
 
 rm scanner.tab.c
@@ -18,4 +18,5 @@ rm util.o
 rm analyze.o
 rm cgen.o
 rm symtab.o
+rm intercodeglobals.o
 

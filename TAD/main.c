@@ -29,5 +29,17 @@ int main(){
 
     printf("%s\n, %d\n", a -> addr2.contents.var.scope, a->location);
 
+    int w = nDigitos(10232323232323);
+    printf("%d\n", w);
+
+    char* coco = printAddress(x);
+
+    char cu[10] = "teste";
+    printf("%s\n", cu);
+
+    printf("%s\n", coco);
+
+    printIntercode(A);
+
     return 0;
 }

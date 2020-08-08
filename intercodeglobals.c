@@ -1,5 +1,6 @@
 #include "intercodeglobals.h"
 #include <string.h>
+#include <math.h>
 
 /// Implementar uma rotina para liberar a memória utilizada.
 THead* initLista(){
@@ -52,3 +53,133 @@ TApontador pesquisaLista(THead* a, int location){
     return NULL;
 }
 
+int nDigitos(long a){
+    int dig = 0;
+    while(a/(pow(10, dig)) >= 1){
+        dig++;
+    }
+    return dig;
+}
+
+char* printAddress(Address addr){
+    if (addr.akind == labelA){
+        return addr.contents.var.name;
+    } else if (addr.akind == numA){
+        char * num = (char*)malloc(sizeof(char)*nDigitos(addr.contents.val));
+        sprintf(num, "%d", addr.contents.val);
+        return num;
+    } else {
+        return "--";
+    }
+}
+
+void printIntercode(THead * head){
+    TApontador iterador = head -> head;
+    iterador = iterador -> prox;
+        while(iterador -> location != 0){
+            char op[10];
+            switch(iterador -> op){
+                case addOp:
+                strcpy(op, "add");
+                break;
+                case subOp:
+                strcpy(op, "sub");
+                break;
+                case multOp:
+                strcpy(op, "mult");
+                break;
+                case divOp:
+                strcpy(op, "div");
+                break;
+                case ltOp:
+                strcpy(op, "lt");
+                break;
+                case eqOp:
+                strcpy(op, "eq");
+                case letOp:
+                strcpy(op, "let");
+                break;
+                case gtOp:
+                strcpy(op, "gt");
+                break;
+                case getOp:
+                strcpy(op, "get");
+                break;
+                case andOp:
+                strcpy(op, "and");
+                break;
+                case orOp:
+                strcpy(op, "or");
+                break;
+                case assignOp:
+                strcpy(op, "assign");
+                break;
+                case allocOp:
+                strcpy(op, "alloc");
+                break;
+                case immedOp:
+                strcpy(op, "immedOp");
+                break;
+                case loadOp:
+                strcpy(op, "load");
+                break;
+                case storeOp:
+                strcpy(op, "store");
+                break;
+                case vecOp:
+                strcpy(op, "vec");
+                break;
+                case gotoOp:
+                strcpy(op, "goto");
+                break;
+                case iffOp:
+                strcpy(op, "iff");
+                break;
+                case retOp:
+                strcpy(op, "ret");
+                break;
+                case funOp:
+                strcpy(op, "fun");
+                break;
+                case endOp:
+                strcpy(op, "end");
+                break;
+                case paramOp:
+                strcpy(op, "param");
+                break;
+                case callOp:
+                strcpy(op, "call");
+                break;
+                case argOp:
+                strcpy(op, "arg");
+                break;
+                case labOp:
+                strcpy(op, "lab");
+                break;
+                case hltOp:
+                strcpy(op, "hlt");
+                break;
+                case inputOp:
+                strcpy(op, "input");
+                break;
+                case outputOp:
+                strcpy(op, "output");
+                break;
+                default:
+                strcpy(op, "ERRO");
+            }
+            char *pos1 = printAddress(iterador -> addr1);
+            char *pos2 = printAddress(iterador -> addr2);
+            char *pos3 = printAddress(iterador -> addr3);
+
+            printf("<%s: %s, %s, %s>\n", op, pos1, pos2, pos3);
+            iterador = iterador -> prox;
+        }
+}
+
+
+/* addOp, subOp, multOp, divOp, ltOp, eqOp,       // TEM UMA INSTRUÇÃO A MAIS:
+    letOp, gtOp, getOp, andOp, orOp, assignOp,      //iGUALDADE CONDICIONAL == 
+    allocOp, immedOp, loadOp, storeOp, vecOp,
+    gotoOp, iffOp, retOp, funOp, endOp, paramOp,
+    callOp, argOp, labOp, hltOp */
