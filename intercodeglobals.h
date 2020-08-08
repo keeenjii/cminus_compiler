@@ -6,11 +6,15 @@ typedef enum {
 
 typedef enum {
     addOp, subOp, multOp, divOp, ltOp, eqOp,       // TEM UMA INSTRUÇÃO A MAIS:
-    letOp, gtOp, getOp, andOp, orOp, assignOp,      //iGUALDADE CONDICIONAL == 
-    allocOp, immedOp, loadOp, storeOp, vecOp,
+    letOp, gtOp, getOp, noteqOp, andOp, orOp, assignOp,      //iGUALDADE CONDICIONAL == e 
+    allocOp, immedOp, loadOp, storeOp, vecOp,       //DIFERENÇA CONDICIONAL
     gotoOp, iffOp, retOp, funOp, endOp, paramOp,
     callOp, argOp, labOp, hltOp, inputOp, outputOp
 } Opkind;
+
+//a operação loadop utiliza além do 2o operando como funte do endereço do dado a ser carregado,
+//um terceiro parametro que representa um deslocamento, ou uma soma a partir do endereço do 2o parametro,
+//afim de facilitar operações com vetores.
 
 typedef struct {
     Addrkind akind;
