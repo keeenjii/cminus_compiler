@@ -118,7 +118,7 @@ void printIntercode(THead * head){
                 strcpy(op, "alloc");
                 break;
                 case immedOp:
-                strcpy(op, "immedOp");
+                strcpy(op, "immed");
                 break;
                 case loadOp:
                 strcpy(op, "load");

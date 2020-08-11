@@ -42,6 +42,11 @@ typedef struct {
     int tamanho;
 }THead;
 
+typedef struct{
+    char* var;
+    char* regDesloc;
+}storeInfo;
+
 THead *initLista();
 
 Address initAddress(Addrkind akind, int val, char *name, char *scope);

@@ -6,6 +6,8 @@
 int location = 1;
 int tempReg = 0;
 
+storeInfo info;
+
 static char* cGen( TreeNode * tree, THead* intercode);
 
 void genStmt(TreeNode *tree, THead* intercode){
@@ -19,8 +21,29 @@ void genStmt(TreeNode *tree, THead* intercode){
     case whileK:
     break;
     case assignK:
-      aux1 = tree -> child[1];
-      cGen(aux1, intercode);
+
+      aux1 = tree -> child[0];
+      aux2 = tree -> child[1];
+      char *assign1 = cGen(aux1, intercode);
+      char *assign2 = cGen(aux2, intercode);
+
+      addr1 = initAddress(labelA, 0, assign1, tree -> attr.scope);
+      addr2 = initAddress(labelA, 0, assign2, tree -> attr.scope);
+      addr3 = initAddress(nop, 0, NULL, NULL);
+
+      insereLista(intercode, addr1, addr2, addr3, assignOp, location);
+      location++;
+
+      addr1 = initAddress(labelA, 0, info.var, tree -> attr.scope);
+      addr2 = initAddress(labelA, 0, assign1, tree -> attr.scope);
+      addr3 = initAddress(labelA, 0, info.regDesloc, tree -> attr.scope);
+
+      insereLista(intercode, addr1, addr2, addr3, storeOp, location);
+      location++;
+
+      tempReg = 0;
+    
+
     break;
     case varK: ;
 
@@ -30,6 +53,7 @@ void genStmt(TreeNode *tree, THead* intercode){
 
       insereLista(intercode, addr1, addr2, addr3, allocOp, location);
       location++;
+
       
     break;
     case funcK:
@@ -40,8 +64,6 @@ void genStmt(TreeNode *tree, THead* intercode){
 
     break;
     case returnK:
-    break;
-    case numK:
     break;
     case paramK:
     break;
@@ -158,6 +180,10 @@ char* genExp(TreeNode *tree, THead *intercode){ //  a função retorna o ultimo 
 
       insereLista(intercode, addr1, addr2, addr3, loadOp, location);
       location++;
+
+      info.var = tree -> attr.name;
+      info.regDesloc = "$zero";
+
       return reg;
     break;
 
@@ -174,6 +200,9 @@ char* genExp(TreeNode *tree, THead *intercode){ //  a função retorna o ultimo 
 
       insereLista(intercode, addr1, addr2, addr3, loadOp, location);
       location++;
+
+      info.var = tree -> attr.name;
+      info.regDesloc = regt;
 
       return regVec;
 
@@ -192,7 +221,7 @@ static char* cGen( TreeNode * tree, THead* intercode){
     char * lastRegt;
 		switch (tree->nodekind) {
       		case statementK:
-        		genStmt(tree, intercode);
+            genStmt(tree, intercode);            
         		break;
       		case expressionK:
         		lastRegt = genExp(tree, intercode);

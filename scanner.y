@@ -75,6 +75,7 @@ var_declaracao: 	INT id PEV
 						$$->child[0] = $2;
 						$2->nodekind = statementK;
 						$2->kind.stmt = varK;
+						$2 -> attr.len = 1;
 						$2->type = integert;
 						
 					} 
