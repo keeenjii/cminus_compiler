@@ -96,6 +96,7 @@ void printIntercode(THead * head){
                 break;
                 case eqOp:
                 strcpy(op, "eq");
+                break;
                 case letOp:
                 strcpy(op, "let");
                 break;

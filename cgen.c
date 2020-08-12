@@ -5,6 +5,8 @@
 
 int location = 1;
 int tempReg = 0;
+int nextLabel = 0;
+int lastLabel = 0;
 
 storeInfo info;
 
@@ -17,8 +19,118 @@ void genStmt(TreeNode *tree, THead* intercode){
 
   switch(tree -> kind.stmt){
     case ifK:
+      aux1 = tree -> child[0];
+      aux2 = tree -> child[1];
+      aux3 = tree -> child[2];
+
+      char *regIf = cGen(aux1, intercode);
+
+      char *label1 = (char*)malloc(7*sizeof(char));
+      sprintf(label1, "label%d", nextLabel);
+      nextLabel++;
+
+      addr1 = initAddress(labelA, 0, regIf, tree -> attr.scope);
+      addr2 = initAddress(labelA, 0, label1, tree -> attr.scope);
+      addr3 = initAddress(nop, 0, NULL, NULL);
+      insereLista(intercode, addr1, addr2, addr3, iffOp, location);
+      location++;
+
+      cGen(aux2, intercode);
+
+      if(aux3 == NULL){
+
+        char *label2 = (char*)malloc(7*sizeof(char));
+        sprintf(label2, "label%d", lastLabel);
+        lastLabel++;
+        addr1 = initAddress(labelA, 0, label2, tree -> attr.scope);
+        addr2 = initAddress(nop, 0, NULL, NULL);
+        addr3 = initAddress(nop, 0, NULL, NULL);
+        insereLista(intercode, addr1, addr2, addr3, labOp, location);
+        location++;
+
+
+      }else{
+        char *label3 = (char*)malloc(7*sizeof(char));
+        sprintf(label3, "label%d", nextLabel);
+        nextLabel++;
+
+        addr1 = initAddress(labelA, 0, label3, tree -> attr.scope);
+        addr2 = initAddress(nop, 0, NULL, NULL);
+        addr3 = initAddress(nop, 0, NULL, NULL);
+        insereLista(intercode, addr1, addr2, addr3, gotoOp, location);
+        location++;
+
+        char *label5 = (char*)malloc(7*sizeof(char));
+        sprintf(label5, "label%d", lastLabel);
+        lastLabel++;
+
+        addr1 = initAddress(labelA, 0, label5, tree -> attr.scope);
+        addr2 = initAddress(nop, 0, NULL, NULL);
+        addr3 = initAddress(nop, 0, NULL, NULL);
+        insereLista(intercode, addr1, addr2, addr3, labOp, location);
+        location++;
+
+        cGen(aux3, intercode);
+        char *label4 = (char*)malloc(7*sizeof(char));
+        sprintf(label4, "label%d", lastLabel);
+        lastLabel++;
+
+        addr1 = initAddress(labelA, 0, label4, tree -> attr.scope);
+        addr2 = initAddress(nop, 0, NULL, NULL);
+        addr3 = initAddress(nop, 0, NULL, NULL);
+        insereLista(intercode, addr1, addr2, addr3, labOp, location);
+        location++;
+      
+      }
+
     break;
     case whileK:
+      aux1 = tree -> child[0];
+      aux2 = tree -> child[1];
+
+      char *label6 = (char*)malloc(7*sizeof(char));
+      sprintf(label6, "label%d", lastLabel);
+      lastLabel++;
+
+      addr1 = initAddress(labelA, 0, label6, tree -> attr.scope);
+      addr2 = initAddress(nop, 0, NULL, NULL);
+      addr3 = initAddress(nop, 0, NULL, NULL);
+      insereLista(intercode, addr1, addr2, addr3, labOp, location);
+      location++;
+
+      char *regLab = cGen(aux1, intercode);
+
+      char *label7 = (char*)malloc(7*sizeof(char));
+      sprintf(label7, "label%d", (nextLabel+1));
+
+      addr1 = initAddress(labelA, 0, regLab, tree -> attr.scope);
+      addr2 = initAddress(labelA, 0, label7, tree -> attr.scope);
+      addr3 = initAddress(nop, 0, NULL, NULL);
+      insereLista(intercode, addr1, addr2, addr3, iffOp, location);
+      location++;
+
+      cGen(aux2, intercode);
+
+      char *label8 = (char*)malloc(7*sizeof(char));
+      sprintf(label8, "label%d", nextLabel);
+      nextLabel = nextLabel + 2;
+
+      addr1 = initAddress(labelA, 0, label8, tree -> attr.scope);
+      addr2 = initAddress(nop, 0, NULL, NULL);
+      addr3 = initAddress(nop, 0, NULL, NULL);
+      insereLista(intercode, addr1, addr2, addr3, gotoOp, location);
+      location++;
+
+      char *label9 = (char*)malloc(7*sizeof(char));
+      sprintf(label9, "label%d", lastLabel);
+      lastLabel++;
+
+      addr1 = initAddress(labelA, 0, label9, tree -> attr.scope);
+      addr2 = initAddress(nop, 0, NULL, NULL);
+      addr3 = initAddress(nop, 0, NULL, NULL);
+      insereLista(intercode, addr1, addr2, addr3, labOp, location);
+      location++;
+
     break;
     case assignK:
 
