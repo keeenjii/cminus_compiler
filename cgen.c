@@ -7,12 +7,23 @@ int location = 1;
 int tempReg = 0;
 int nextLabel = 0;
 int lastLabel = 0;
+int numArgs = 0;
 
 storeInfo info;
 
-static char* cGen( TreeNode * tree, THead* intercode);
+static char* cGen( TreeNode * tree, THead* intercode, int argFlag);
 
-void genStmt(TreeNode *tree, THead* intercode){
+void thrownArgOp(char *reg, char *scope, THead *intercode, int location){
+  Address ad1, ad2, ad3;
+  ad1 = initAddress(labelA, 0, reg, scope);
+  ad2 = initAddress(nop, 0, NULL, NULL);
+  ad3 = initAddress(nop, 0, NULL, NULL);
+
+  insereLista(intercode, ad1, ad2, ad3, argOp, location);
+  location++;
+}
+
+char* genStmt(TreeNode *tree, THead* intercode){
 
   TreeNode *aux1, *aux2, *aux3;
   Address addr1, addr2, addr3;
@@ -23,7 +34,7 @@ void genStmt(TreeNode *tree, THead* intercode){
       aux2 = tree -> child[1];
       aux3 = tree -> child[2];
 
-      char *regIf = cGen(aux1, intercode);
+      char *regIf = cGen(aux1, intercode, 0);
 
       char *label1 = (char*)malloc(7*sizeof(char));
       sprintf(label1, "label%d", nextLabel);
@@ -35,7 +46,7 @@ void genStmt(TreeNode *tree, THead* intercode){
       insereLista(intercode, addr1, addr2, addr3, iffOp, location);
       location++;
 
-      cGen(aux2, intercode);
+      cGen(aux2, intercode, 0);
 
       if(aux3 == NULL){
 
@@ -70,7 +81,7 @@ void genStmt(TreeNode *tree, THead* intercode){
         insereLista(intercode, addr1, addr2, addr3, labOp, location);
         location++;
 
-        cGen(aux3, intercode);
+        cGen(aux3, intercode, 0);
         char *label4 = (char*)malloc(7*sizeof(char));
         sprintf(label4, "label%d", lastLabel);
         lastLabel++;
@@ -98,7 +109,7 @@ void genStmt(TreeNode *tree, THead* intercode){
       insereLista(intercode, addr1, addr2, addr3, labOp, location);
       location++;
 
-      char *regLab = cGen(aux1, intercode);
+      char *regLab = cGen(aux1, intercode, 0);
 
       char *label7 = (char*)malloc(7*sizeof(char));
       sprintf(label7, "label%d", (nextLabel+1));
@@ -109,7 +120,7 @@ void genStmt(TreeNode *tree, THead* intercode){
       insereLista(intercode, addr1, addr2, addr3, iffOp, location);
       location++;
 
-      cGen(aux2, intercode);
+      cGen(aux2, intercode, 0);
 
       char *label8 = (char*)malloc(7*sizeof(char));
       sprintf(label8, "label%d", nextLabel);
@@ -136,8 +147,8 @@ void genStmt(TreeNode *tree, THead* intercode){
 
       aux1 = tree -> child[0];
       aux2 = tree -> child[1];
-      char *assign1 = cGen(aux1, intercode);
-      char *assign2 = cGen(aux2, intercode);
+      char *assign1 = cGen(aux1, intercode, 0);
+      char *assign2 = cGen(aux2, intercode, 0);
 
       addr1 = initAddress(labelA, 0, assign1, tree -> attr.scope);
       addr2 = initAddress(labelA, 0, assign2, tree -> attr.scope);
@@ -170,9 +181,25 @@ void genStmt(TreeNode *tree, THead* intercode){
     break;
     case funcK:
       aux2 = tree -> child[1];
-      cGen(aux2, intercode);
+      cGen(aux2, intercode, 0);
     break;
     case callK:
+      aux1 = tree -> child[0];
+      cGen(aux1, intercode, 1);
+      
+      char *rot = (char*)malloc(5*sizeof(char));
+      sprintf(rot, "$t%d", tempReg);
+      tempReg++;
+
+      addr1 = initAddress(labelA, 0, rot, tree -> attr.scope);
+      addr2 = initAddress(labelA, 0, tree -> attr.name, tree -> attr.scope);
+      addr3 = initAddress(numA, numArgs, NULL, NULL);
+      numArgs = 0;
+
+      insereLista(intercode, addr1, addr2, addr3, callOp, location);
+      location++;
+
+      return rot;
 
     break;
     case returnK:
@@ -188,12 +215,12 @@ void genStmt(TreeNode *tree, THead* intercode){
       insereLista(intercode, addr1, addr2, addr3, allocOp, location);
       location++;
     break;
-    
-  }
 
+  }
+  return NULL;
 }
 
-char* genExp(TreeNode *tree, THead *intercode){ //  a função retorna o ultimo registrador temporário utilizado ou NULL se nao utilizar
+char* genExp(TreeNode *tree, THead *intercode, int argFlag){ //  a função retorna o ultimo registrador temporário utilizado ou NULL se nao utilizar
 
   Address addr1, addr2, addr3;
   TreeNode *aux1, *aux2, *aux3;
@@ -204,8 +231,8 @@ char* genExp(TreeNode *tree, THead *intercode){ //  a função retorna o ultimo 
     aux1 = tree -> child[0];
     aux2 = tree -> child[1];
 
-    char * reg1 = cGen(aux1, intercode);
-    char * reg2 = cGen(aux2, intercode);
+    char * reg1 = cGen(aux1, intercode, 0);
+    char * reg2 = cGen(aux2, intercode, 0);
     char *reg3 = (char*)malloc(5*sizeof(char));
     sprintf(reg3, "$t%d", tempReg);
     tempReg++;
@@ -264,6 +291,10 @@ char* genExp(TreeNode *tree, THead *intercode){ //  a função retorna o ultimo 
       location++;
       break;
     }
+    if(argFlag == 1){
+        thrownArgOp(reg3, tree -> attr.scope, intercode, location);
+        numArgs++;
+    }
     return reg3;
     break;
 
@@ -278,6 +309,11 @@ char* genExp(TreeNode *tree, THead *intercode){ //  a função retorna o ultimo 
 
       insereLista(intercode, addr1, addr2, addr3, immedOp, location);
       location++;
+      if(argFlag == 1){
+        thrownArgOp(reg4, tree -> attr.scope, intercode, location);
+        numArgs++;
+      }
+
       return reg4;
 
     break;
@@ -295,13 +331,16 @@ char* genExp(TreeNode *tree, THead *intercode){ //  a função retorna o ultimo 
 
       info.var = tree -> attr.name;
       info.regDesloc = "$zero";
-
+      if(argFlag == 1){
+        thrownArgOp(reg, tree -> attr.scope, intercode, location);
+        numArgs++;
+      }
       return reg;
     break;
 
     case vectK:
       aux1 = tree -> child[0];
-      char *regt = cGen(aux1, intercode);
+      char *regt = cGen(aux1, intercode, 0);
       char *regVec = (char*)malloc(5*sizeof(char));
       sprintf(regVec, "$t%d", tempReg);
       tempReg++;
@@ -316,32 +355,36 @@ char* genExp(TreeNode *tree, THead *intercode){ //  a função retorna o ultimo 
       info.var = tree -> attr.name;
       info.regDesloc = regt;
 
+      if(argFlag == 1){
+        thrownArgOp(regVec, tree -> attr.scope, intercode, location);
+        numArgs++;
+      }
       return regVec;
 
     break;
 
     case typeK:
     aux1 = tree -> child[0];
-    cGen(aux1, intercode);
+    cGen(aux1, intercode, 0);
     break;
   }
   return NULL;
 }
 
-static char* cGen( TreeNode * tree, THead* intercode){ 
+static char* cGen( TreeNode * tree, THead* intercode, int argFlag){ 
 	if (tree != NULL){ 
     char * lastRegt;
 		switch (tree->nodekind) {
       		case statementK:
-            genStmt(tree, intercode);            
+            lastRegt = genStmt(tree, intercode);            
         		break;
       		case expressionK:
-        		lastRegt = genExp(tree, intercode);
+        		lastRegt = genExp(tree, intercode, argFlag);
         		break;
       		default:
         		break;
     }
-    cGen(tree->sibling, intercode);
+    cGen(tree->sibling, intercode, argFlag);
     return lastRegt;
   }
 }
@@ -351,7 +394,7 @@ void codeGen(TreeNode * syntaxTree, char * codefile)
    strcpy(s,"File: ");
    strcat(s,codefile);
    THead * intercodeTAD = initLista();
-   cGen(syntaxTree, intercodeTAD);
+   cGen(syntaxTree, intercodeTAD, 0);
    printIntercode(intercodeTAD);
 
 }

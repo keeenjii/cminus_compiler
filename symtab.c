@@ -80,7 +80,7 @@ void st_insert( char * name, int lineno, int loc, char* Escopo,
     }
 } 
 
-int st_lookup (char* name, char* Escopo,char* typeID)
+int st_lookup (char* name, char* Escopo, char* typeID)
 { 
   int h = hash(name, Escopo);	
   BucketList l =  hashTable[h];
@@ -89,16 +89,31 @@ int st_lookup (char* name, char* Escopo,char* typeID)
     
         l = l->next;
   }
+
   if (l == NULL){ 
       return -1;
-  }
-  else{
+  }else{
       
       return l->memloc;
   }
 }
 
+/*char* st_lookup_typeID (char* name, char* Escopo){
+  int h = hash(name, Escopo);	
+  BucketList l =  hashTable[h];
+  
+  while ((l != NULL) && (strcmp(name,l->name) != 0)){
+    
+        l = l->next;
+  }
 
+  if (l == NULL){ 
+      return NULL;
+  }else{
+      
+      return l->typeID;
+  }
+}*/
 
 char* st_lookup_type (char* name, char* Escopo)
 { 

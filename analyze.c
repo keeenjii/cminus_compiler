@@ -27,12 +27,12 @@ static void insertNode( TreeNode * t)
 			case vectStmtK:
 			if (st_lookup(t->attr.name, t->attr.scope,"vector") == -1 && st_lookup(t->attr.name, "global","vector") == -1){
 				if(t -> attr.len != 0){
-            		st_insert(t->attr.name,t->lineno,location, t->attr.scope, "vector", (t->type ==1) ? "integer":"void", t -> attr.len);		
+            		st_insert(t->attr.name,t->lineno,location, t->attr.scope, "vector", "pointer", t -> attr.len);		
 					location += t -> attr.len;
 				} else {
-					st_insert(t -> attr.name, t -> lineno, location++, t -> attr.scope, "vector", (t -> type == 1) ? "integer": "void", 1);
+					st_insert(t -> attr.name, t -> lineno, location++, t -> attr.scope, "vector", "pointer", 1);
 				}
-				  }
+			}
       		else
         		typeError(t,"Declaração Inválida. Vetor já declarado.");	
 			if (t -> type == voidt)
@@ -92,8 +92,13 @@ static void insertNode( TreeNode * t)
 	      	if (st_lookup(t->attr.name, t->attr.scope,"vector") == -1 && st_lookup(t->attr.name, "global","vector") == -1)
 				 typeError(t,"Ainda não declarado.");
 			else{
-            	st_insert(t->attr.name,t->lineno,0, t->attr.scope, "vector", st_lookup_type(t->attr.name, t->attr.scope), 
-					st_lookup_size(t -> attr.name, t -> attr.scope) == -1 ? st_lookup_size(t -> attr.name, "global") : st_lookup_size(t -> attr.name, t -> attr.scope));	
+				if(strcmp(st_lookup_type(t -> attr.name, t -> attr.scope), "pointer")!= 0 &&
+						strcmp(st_lookup_type(t -> attr.name, "global"), "pointer")!= 0 )
+				typeError(t, "Ainda não declarado");	
+		
+        	   	st_insert(t->attr.name,t->lineno,0, t->attr.scope, "vector", "pointer", 
+				st_lookup_size(t -> attr.name, t -> attr.scope) == -1 ? st_lookup_size(t -> attr.name, "global") : st_lookup_size(t -> attr.name, t -> attr.scope));
+
 			}
 			break;
 		  case vectIndexK:

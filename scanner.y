@@ -570,7 +570,6 @@ arg_lista: 			arg_lista VIRGULA expressao{
                         }
                         else
                             $$ = $3;
-
 					} 
 				| 	expressao{
 

@@ -1,8 +1,12 @@
+int teste(int x, int y){
+	return x + y;
+}
+
 int main(void){
-	int a;
+	int v[10];
+	int a; int b;
 	a = 0;
-	while(a < 10){
-		a = a + 1;
-	}
+	v[7] = 0;
+	b = teste(10, 10);
 
 }
