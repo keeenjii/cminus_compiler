@@ -23,7 +23,7 @@ void thrownArgOp(char *reg, char *scope, THead *intercode, int location){
   location++;
 }
 
-char* genStmt(TreeNode *tree, THead* intercode){
+char* genStmt(TreeNode *tree, THead* intercode, int argFlag){
 
   TreeNode *aux1, *aux2, *aux3;
   Address addr1, addr2, addr3;
@@ -180,7 +180,23 @@ char* genStmt(TreeNode *tree, THead* intercode){
       
     break;
     case funcK:
+      aux1 = tree -> child[0];
       aux2 = tree -> child[1];
+      char *typ = (char*)malloc(4*sizeof(char));
+
+      if(tree -> type == integert){
+        sprintf(typ, "int");
+      }else {
+        sprintf(typ, "void");
+      }
+
+      addr1 = initAddress(labelA, 0, typ, tree -> attr.scope);
+      addr2 = initAddress(labelA, 0, tree -> attr.name, tree -> attr.scope);
+      addr3 = initAddress(nop, 0, NULL, NULL);
+
+      insereLista(intercode, addr1, addr2, addr3, funOp, location);
+      location++;
+      cGen(aux1, intercode, 0);
       cGen(aux2, intercode, 0);
     break;
     case callK:
@@ -195,16 +211,66 @@ char* genStmt(TreeNode *tree, THead* intercode){
       addr2 = initAddress(labelA, 0, tree -> attr.name, tree -> attr.scope);
       addr3 = initAddress(numA, numArgs, NULL, NULL);
       numArgs = 0;
-
-      insereLista(intercode, addr1, addr2, addr3, callOp, location);
+      Opkind op;
+      if(strcmp(tree -> attr.name, "output") == 0)
+        op = outputOp;
+      else if(strcmp(tree -> attr.name, "input") == 0)
+        op = inputOp;
+      else 
+        op = callOp;
+      insereLista(intercode, addr1, addr2, addr3, op, location);
       location++;
+
+      if(argFlag == 1){
+       thrownArgOp(rot, tree -> attr.scope, intercode, location);
+        numArgs++;
+        }      
 
       return rot;
 
     break;
-    case returnK:
+    case returnK: ;
+      char* retExp;
+      aux1 = tree -> child[0];
+      if(aux1 == NULL){
+        addr1 = initAddress(nop, 0, NULL, NULL);
+        addr2 = initAddress(nop, 0, NULL, NULL);
+        addr3 = initAddress(nop, 0, NULL, NULL);
+        
+        insereLista(intercode, addr1, addr2, addr3, retOp, location);
+        location++;
+      } else {
+        retExp = cGen(aux1, intercode, 0);
+        addr1 = initAddress(labelA, 0, retExp, tree -> attr.scope);
+        addr2 = initAddress(nop, 0, NULL, NULL);
+        addr3 = initAddress(nop, 0, NULL, NULL);
+
+        insereLista(intercode, addr1, addr2, addr3, retOp, location);
+        location++;
+      }
+      
     break;
-    case paramK:
+    case paramK: ;
+      char *typP = (char*)malloc(4*sizeof(char));
+
+      if(tree -> type == integert){
+        sprintf(typP, "int");
+      }else {
+        sprintf(typP, "void");
+      }
+      addr1 = initAddress(labelA, 0, typP, tree -> attr.scope);
+      addr2 = initAddress(labelA, 0, tree -> attr.name, tree -> attr.scope);
+      addr3 = initAddress(labelA, 0, tree -> attr.scope, tree -> attr.scope);
+
+      insereLista(intercode, addr1, addr2, addr3, paramOp, location);
+      location++;
+
+
+      if(argFlag == 1){
+          thrownArgOp(rot, tree -> attr.scope, intercode, location);
+          numArgs++;
+        }      
+
     break;
     case vectStmtK: ;
 
@@ -376,7 +442,7 @@ static char* cGen( TreeNode * tree, THead* intercode, int argFlag){
     char * lastRegt;
 		switch (tree->nodekind) {
       		case statementK:
-            lastRegt = genStmt(tree, intercode);            
+            lastRegt = genStmt(tree, intercode, argFlag);            
         		break;
       		case expressionK:
         		lastRegt = genExp(tree, intercode, argFlag);
@@ -391,11 +457,15 @@ static char* cGen( TreeNode * tree, THead* intercode, int argFlag){
 
 void codeGen(TreeNode * syntaxTree, char * codefile)
 {  char * s = malloc(strlen(codefile)+7);
-   strcpy(s,"File: ");
-   strcat(s,codefile);
-   THead * intercodeTAD = initLista();
-   cGen(syntaxTree, intercodeTAD, 0);
-   printIntercode(intercodeTAD);
+  Address addr;
+  strcpy(s,"File: ");
+  strcat(s,codefile);
+  THead * intercodeTAD = initLista();
+  cGen(syntaxTree, intercodeTAD, 0);
+  addr = initAddress(nop, 0, NULL, NULL);
+  insereLista(intercodeTAD, addr, addr, addr, hltOp, location);
+  location++;
+  printIntercode(intercodeTAD);
 
 }
 
