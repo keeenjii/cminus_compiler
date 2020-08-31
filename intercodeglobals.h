@@ -5,9 +5,9 @@ typedef enum {
 } Addrkind;
 
 typedef enum {
-    addOp, subOp, multOp, divOp, ltOp, eqOp,       // TEM UMA INSTRUÇÃO A MAIS:
-    letOp, gtOp, getOp, noteqOp, andOp, orOp, assignOp,      //iGUALDADE CONDICIONAL == e 
-    allocOp, immedOp, loadOp, storeOp, vecOp,       //DIFERENÇA CONDICIONAL
+    addOp, subOp, multOp, divOp, ltOp, eqOp,       
+    letOp, gtOp, getOp, noteqOp, andOp, orOp, assignOp,   
+    allocOp, immedOp, loadOp, storeOp, vecOp,     
     gotoOp, iffOp, retOp, funOp, endOp, paramOp,
     callOp, argOp, labOp, hltOp, inputOp, outputOp
 } Opkind;

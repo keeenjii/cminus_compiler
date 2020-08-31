@@ -5,8 +5,6 @@
 
 int location = 1;
 int tempReg = 0;
-int nextLabel = 0;
-int lastLabel = 0;
 int numArgs = 0;
 int labelCont = 0;
 
