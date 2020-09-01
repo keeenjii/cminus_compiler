@@ -24,6 +24,12 @@ static void insertNode( TreeNode * t)
           		else
             		typeError(t,"Declaração Inválida. Parâmetro já declarado.");	
             break;
+			case paramVectK:
+				if (st_lookup(t->attr.name, t->attr.scope,"vector") == -1 && st_lookup(t->attr.name, "global","vector") == -1)
+            		st_insert(t->attr.name,t->lineno,location++, t->attr.scope, "vector", "pointer", 1);
+          		else
+            		typeError(t,"Declaração Inválida. Parâmetro já declarado.");	
+			break;
 			case vectStmtK:
 			if (st_lookup(t->attr.name, t->attr.scope,"vector") == -1 && st_lookup(t->attr.name, "global","vector") == -1){
 				if(t -> attr.len != 0){

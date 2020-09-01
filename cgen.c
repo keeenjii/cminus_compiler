@@ -275,7 +275,23 @@ char* genStmt(TreeNode *tree, THead* intercode, int argFlag){
       insereLista(intercode, addr1, addr2, addr3, allocOp, location);
       location++;
     break;
+    case paramVectK: ;
+      char *typPv = (char*)malloc(4*sizeof(char));
+      sprintf(typPv, "vector");
+      
+      addr1 = initAddress(labelA, 0, typPv, tree -> attr.scope);
+      addr2 = initAddress(labelA, 0, tree -> attr.name, tree -> attr.scope);
+      addr3 = initAddress(labelA, 0, tree -> attr.scope, tree -> attr.scope);
 
+      insereLista(intercode, addr1, addr2, addr3, paramOp, location);
+      location++;
+
+
+      if(argFlag == 1){
+          thrownArgOp(rot, tree -> attr.scope, intercode, location);
+          numArgs++;
+        }    
+    break;
   }
   return NULL;
 }

@@ -208,7 +208,7 @@ param: 				INT id{
 						
 						$$ = newExpNode(typeK);
 						$2->nodekind = statementK;
-                        $2->kind.stmt = vectStmtK;
+                        $2->kind.stmt = paramVectK;
                         $$->type = integert;
                         $$->attr.name = "integer";
                         $$->child[0] = $2;
@@ -230,7 +230,7 @@ param: 				INT id{
 					
 						$$ = newExpNode(typeK);
 						$2->nodekind = statementK;
-                        $2->kind.stmt = vectStmtK;
+                        $2->kind.stmt = paramVectK;
                         $$->type = voidt;
                         $$->attr.name = "void";
                         $$->child[0] = $2;

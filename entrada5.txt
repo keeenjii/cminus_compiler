@@ -1,6 +1,6 @@
 
 int vet[100];
-int iii;
+
 
 int minloc ( int a[], int low, int high ){	
 
