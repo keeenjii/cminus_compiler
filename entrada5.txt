@@ -1,52 +1,10 @@
+int fatorial(int x){
+	if(x == 1)
+		return 1;
 
-int vet[100];
-
-
-int minloc ( int a[], int low, int high ){	
-
-	int i; int x; int k;
-	k = low;
-	x = a[low];
-	i = low + 1;
-	while (i < high){
-		if (a[i] < x){
-			x = a[i];
-			k = i;
-		}
-		else {
-
-			k = i + 1000;
-		}
-		i = i + 1;
-	}
-	
-	return k;
+	return x * fatorial(x-1);
 }
 
-void sort( int a[], int low, int high){	
-	int i; int k;
-	i = low;
-	while (i < high-1){
-		int t;
-		k = minloc(a,i,high);
-		t = a[k];
-		a[k] = a[i];
-		a[i] = t;
-		i = i + 1;
-	}
-}
-
-void main(void){
-	int i;
-	i = 0;
-	while (i < 10){
-		vet[i] = input();
-		i = i + 1;
-	}
-	sort(vet,0,10);
-	i = 0;
-	while (i < 10){
-		output(vet[i]);
-		i = i + 1;
-	}
+int main(void){
+	output(fatorial(7));
 }
