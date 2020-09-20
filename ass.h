@@ -3,12 +3,12 @@ typedef enum {
     addi, subi, lw, sw, andi, ori, xori, cmpi, jr, beq, bne, 
     j, jal, 
     breakk, out, in,
-    nop
+    notInst
 
 }Instrucao;
 
 typedef enum{
-    reg, imed, label, nothing
+    reg, imed, nothing
 }tipoOperando;
 
 typedef struct {
@@ -26,6 +26,7 @@ typedef struct {
 typedef struct assItem *assApontador;
 
 typedef struct assItem{
+    int islabel;
 
     Instrucao inst;
 
@@ -45,7 +46,7 @@ assHead *initAss();
 
 Operando initOperando(tipoOperando kind, int imediato, char* name, char* scope);
 
-void insereAss(assHead *a, Operando op1, Operando op2, Operando op3, Instrucao inst, int location);
+void insereAss(assHead *a, Operando op1, Operando op2, Operando op3, Instrucao inst, int location, int islabel);
 
 char * printOp(Operando op);
 

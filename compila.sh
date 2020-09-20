@@ -4,7 +4,7 @@ bison -d -v scanner.y
 
 gcc -c *.c
 gcc -o scanner *.o -lm
-./scanner entrada5.txt
+./scanner entrada.txt
 
 rm scanner.tab.c
 rm scanner.tab.o

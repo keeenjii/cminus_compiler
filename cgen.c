@@ -2,6 +2,9 @@
 #include "symtab.h"
 #include "cgen.h"
 #include "intercodeglobals.h"
+#include "ass.h"
+#include "assGen.h"
+
 
 int location = 1;
 int tempReg = 0;
@@ -477,6 +480,9 @@ void codeGen(TreeNode * syntaxTree, char * codefile)
   insereLista(intercodeTAD, addr, addr, addr, hltOp, location);
   location++;
   printIntercode(intercodeTAD);
+  assHead* assembly = initAss();
+  assGen(assembly, intercodeTAD);
+  printAss(assembly); 
 
 }
 

@@ -3,6 +3,9 @@
 #include "analyze.h"
 
 static int location = 0;
+static int globalLoc = 0;
+char *lastScope = "global";
+int verificaGlobal;
 
 static void typeError(TreeNode * t, char * message)
 { fprintf(listing,"Erro de tipo em %s na linha %d: %s.\n",t->attr.name, t->lineno,message);
@@ -12,31 +15,40 @@ static void typeError(TreeNode * t, char * message)
 
 static void insertNode( TreeNode * t)
 { 
-	
+	verificaGlobal = strcmp(t -> attr.scope, "global");
+	if(strcmp(t -> attr.scope, lastScope) != 0){
+		location = 0;
+		lastScope = t -> attr.scope;
+	}
 	switch (t->nodekind)
     { 
 
 		case statementK:
       	switch (t->kind.stmt)
         { 	case paramK:
+
           		if (st_lookup(t->attr.name, t->attr.scope,"variable") == -1 && st_lookup(t->attr.name, "global","variable") == -1)
-            		st_insert(t->attr.name,t->lineno,location++, t->attr.scope, "variable", (t->type ==1) ? "integer":"void", 1);
+            		st_insert(t->attr.name,t->lineno, verificaGlobal == 0 ? globalLoc++ : location++, t->attr.scope, "variable", (t->type ==1) ? "integer":"void", 1);
           		else
             		typeError(t,"Declaração Inválida. Parâmetro já declarado.");	
             break;
 			case paramVectK:
 				if (st_lookup(t->attr.name, t->attr.scope,"vector") == -1 && st_lookup(t->attr.name, "global","vector") == -1)
-            		st_insert(t->attr.name,t->lineno,location++, t->attr.scope, "vector", "pointer", 1);
+            		st_insert(t->attr.name,t->lineno,verificaGlobal == 0 ? globalLoc++ : location++, t->attr.scope, "vector", "pointer", 1);
           		else
             		typeError(t,"Declaração Inválida. Parâmetro já declarado.");	
 			break;
 			case vectStmtK:
 			if (st_lookup(t->attr.name, t->attr.scope,"vector") == -1 && st_lookup(t->attr.name, "global","vector") == -1){
 				if(t -> attr.len != 0){
-            		st_insert(t->attr.name,t->lineno,location, t->attr.scope, "vector", "pointer", t -> attr.len);		
-					location += t -> attr.len;
+            		st_insert(t->attr.name,t->lineno,verificaGlobal == 0 ? globalLoc : location, t->attr.scope, "vector", "pointer", t -> attr.len);		
+					if(verificaGlobal == 0){
+						globalLoc += t -> attr.len;
+					}else {
+						location += t -> attr.len;
+					}
 				} else {
-					st_insert(t -> attr.name, t -> lineno, location++, t -> attr.scope, "vector", "pointer", 1);
+					st_insert(t -> attr.name, t -> lineno, verificaGlobal == 0 ? globalLoc++ : location++, t -> attr.scope, "vector", "pointer", 1);
 				}
 			}
       		else
@@ -47,7 +59,7 @@ static void insertNode( TreeNode * t)
 			case varK:
           		if (st_lookup(t->attr.name, t->attr.scope,"variable") == -1 && st_lookup(t->attr.name, "global","variable") == -1){
 				
-            		st_insert(t->attr.name,t->lineno,location++, t->attr.scope, "variable", (t->type ==1) ? "integer":"void", 1);
+            		st_insert(t->attr.name,t->lineno,verificaGlobal == 0 ? globalLoc++ : location++, t->attr.scope, "variable", (t->type ==1) ? "integer":"void", 1);
 				  }
           		else 
             		typeError(t,"Declaração Inválida. Variável já declarada.");	
@@ -58,11 +70,11 @@ static void insertNode( TreeNode * t)
 				if (st_lookup(t->attr.name, t->attr.scope,"function") == -1 && st_lookup(t->attr.name, "global","function") == -1)
 				{
 					if(t->type == integert){
-                        st_insert(t->attr.name,t->lineno,location++, t->attr.scope,"function", "integer", 1);
+                        st_insert(t->attr.name,t->lineno,-9, t->attr.scope,"function", "integer", 1);
 						
 					}
 					else{
-                        st_insert(t->attr.name,t->lineno,location++, t->attr.scope,"function", "void", 1);
+                        st_insert(t->attr.name,t->lineno,-9, t->attr.scope,"function", "void", 1);
 						
 					}
 				}
@@ -74,7 +86,7 @@ static void insertNode( TreeNode * t)
 					if (st_lookup(t->attr.name, t->attr.scope,"function") == -1 && st_lookup(t->attr.name, "global","function") == -1)
 						typeError(t,"Chamada inválida. Função não declarada.");	
 					else
-						st_insert(t->attr.name,t->lineno,location++, t->attr.scope, "call", "-", 1);
+						st_insert(t->attr.name,t->lineno,-9, t->attr.scope, "call", "-", 1);
 				}
           	break;
 			case returnK:

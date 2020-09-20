@@ -1,3 +1,6 @@
+int teste1;
+int teste2[10];
+
 int fibonacci(int n){
 	int c; int next;
 	int first; int second;
