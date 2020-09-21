@@ -195,6 +195,12 @@ char* genStmt(TreeNode *tree, THead* intercode, int argFlag){
       location++;
       cGen(aux1, intercode, 0, 0);
       cGen(aux2, intercode, 0, 0);
+
+      addr1 = initAddress(labelA, 0, tree -> attr.name, tree -> attr.scope);
+      addr2 = initAddress(nop, 0, NULL, NULL);
+      insereLista(intercode, addr1, addr2, addr2, endOp, location);
+      location++;
+
     break;
     case callK:
       aux1 = tree -> child[0];
@@ -480,6 +486,7 @@ void codeGen(TreeNode * syntaxTree, char * codefile)
   insereLista(intercodeTAD, addr, addr, addr, hltOp, location);
   location++;
   printIntercode(intercodeTAD);
+  printf("\nMontando o código assembly: \n\n");
   assHead* assembly = initAss();
   assGen(assembly, intercodeTAD);
   printAss(assembly); 
