@@ -7,7 +7,7 @@ typedef enum {
 typedef enum {
     addOp, subOp, multOp, divOp, ltOp, eqOp,       
     letOp, gtOp, getOp, noteqOp, andOp, orOp, assignOp,   
-    allocOp, immedOp, loadOp, storeOp, vecOp,     
+    allocOp, immedOp, loadOp, storeOp,     
     gotoOp, iffOp, retOp, funOp, endOp, paramOp,
     callOp, argOp, labOp, hltOp, inputOp, outputOp
 } Opkind;

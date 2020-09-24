@@ -1,5 +1,5 @@
 typedef enum {
-    add, sub, mult, divv, sra, sla, and, or, xor, nor, cmp, not, 
+    add, sub, mult, divv, sra, sla, and, or, xor, eq, cmp, not, 
     addi, subi, lw, sw, andi, ori, xori, cmpi, jr, beq, bne, 
     j, jal, 
     breakk, out, in,

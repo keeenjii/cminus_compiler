@@ -59,7 +59,7 @@ void printAss(assHead *head){
     iterador = iterador -> prox;
     while(iterador -> location != 0){
         if(iterador -> islabel == 1){
-            printf(".%s:\n", iterador -> op1.contents.var.name);
+            printf("\n.%s:\n", iterador -> op1.contents.var.name);
         }else{
             char op[7];
             switch(iterador -> inst){
@@ -90,8 +90,8 @@ void printAss(assHead *head){
                 case xor:
                 strcpy(op, "xor");
                 break;
-                case nor:
-                strcpy(op, "nor");
+                case eq:
+                strcpy(op, "eq");
                 break;
                 case cmp:
                 strcpy(op, "cmp");

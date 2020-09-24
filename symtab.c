@@ -128,7 +128,7 @@ char* st_lookup_type (char* name, char* Escopo)
       return l->typeData;
 }
 
-int st_lookup_memloc (char* name, char* Escopo)
+int st_lookup_offset (char* name, char* Escopo)
 { 
   int h = hash(name, Escopo);	
   BucketList l =  hashTable[h];
@@ -157,7 +157,7 @@ int st_lookup_size(char *name, char *Escopo){
 
 void printSymTab(FILE * listing)
 { int i;
-  fprintf(listing,"Location       Size           Name           Escopo         TypeID         TypeData       Line Numbers\n");
+  fprintf(listing,"Offset         Size           Name           Escopo         TypeID         TypeData       Line Numbers\n");
   fprintf(listing,"-------------  -------------  -------------  -------------  -------------  -------------  -------------\n");
   for (i=0;i<SIZE;++i)
   { if (hashTable[i] != NULL)

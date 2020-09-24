@@ -21,7 +21,7 @@ void st_insert( char * name, int lineno, int loc, char* scope, char* typeID, cha
  */
 int st_lookup (char * name, char* scope, char* typeID);
 
-int st_lookup_memloc (char* name, char* Escopo); 
+int st_lookup_offset (char* name, char* Escopo); 
 
 int st_lookup_size(char *name, char* Escopo);
 

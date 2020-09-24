@@ -102,7 +102,7 @@ static void insertNode( TreeNode * t)
 			if (st_lookup(t->attr.name, t->attr.scope,"variable") == -1 && st_lookup(t->attr.name, "global","variable") == -1)
 				 typeError(t,"Ainda não declarado.");
 			else{
-            	st_insert(t->attr.name,t->lineno,0, t->attr.scope, "variable", st_lookup_type(t->attr.name, t->attr.scope), 1);	
+            //	st_insert(t->attr.name,t->lineno,0, t->attr.scope, "variable", st_lookup_type(t->attr.name, t->attr.scope), 1);	
 				
 			}
 		  break;
@@ -114,8 +114,8 @@ static void insertNode( TreeNode * t)
 						strcmp(st_lookup_type(t -> attr.name, "global"), "pointer")!= 0 )
 				typeError(t, "Ainda não declarado");	
 		
-        	   	st_insert(t->attr.name,t->lineno,0, t->attr.scope, "vector", "pointer", 
-				st_lookup_size(t -> attr.name, t -> attr.scope) == -1 ? st_lookup_size(t -> attr.name, "global") : st_lookup_size(t -> attr.name, t -> attr.scope));
+        	//   	st_insert(t->attr.name,t->lineno,0, t->attr.scope, "vector", "pointer", 
+			//	st_lookup_size(t -> attr.name, t -> attr.scope) == -1 ? st_lookup_size(t -> attr.name, "global") : st_lookup_size(t -> attr.name, t -> attr.scope));
 
 			}
 			break;

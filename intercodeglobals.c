@@ -127,9 +127,6 @@ void printIntercode(THead * head){
                 case storeOp:
                 strcpy(op, "store");
                 break;
-                case vecOp:
-                strcpy(op, "vec");
-                break;
                 case gotoOp:
                 strcpy(op, "goto");
                 break;
