@@ -19,4 +19,6 @@ rm analyze.o
 rm cgen.o
 rm symtab.o
 rm intercodeglobals.o
+rm ass.o
+rm assGen.o
 

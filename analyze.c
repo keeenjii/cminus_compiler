@@ -34,7 +34,7 @@ static void insertNode( TreeNode * t)
             break;
 			case paramVectK:
 				if (st_lookup(t->attr.name, t->attr.scope,"vector") == -1 && st_lookup(t->attr.name, "global","vector") == -1)
-            		st_insert(t->attr.name,t->lineno,verificaGlobal == 0 ? globalLoc++ : location++, t->attr.scope, "vector", "pointer", 1);
+            		st_insert(t->attr.name,t->lineno,verificaGlobal == 0 ? globalLoc++ : location++, t->attr.scope, "vector", "param pointer", 1);
           		else
             		typeError(t,"Declaração Inválida. Parâmetro já declarado.");	
 			break;
@@ -111,6 +111,7 @@ static void insertNode( TreeNode * t)
 				 typeError(t,"Ainda não declarado.");
 			else{
 				if(strcmp(st_lookup_type(t -> attr.name, t -> attr.scope), "pointer")!= 0 &&
+						strcmp(st_lookup_type(t -> attr.name, t -> attr.scope), "param pointer")!= 0 &&
 						strcmp(st_lookup_type(t -> attr.name, "global"), "pointer")!= 0 )
 				typeError(t, "Ainda não declarado");	
 		
