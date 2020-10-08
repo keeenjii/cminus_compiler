@@ -91,7 +91,7 @@ int main( int argc, char * argv[] ){
         int fnlen = strcspn(pgm,".");
         codefile = (char *) calloc(fnlen+4, sizeof(char));
         strncpy(codefile,pgm,fnlen);
-        strcat(codefile,".tm");
+        strcat(codefile,".cminus");
         code = fopen(codefile,"w");
         if (code == NULL){ 
             printf("Unable to open %s\n",codefile);

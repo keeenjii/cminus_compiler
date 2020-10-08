@@ -17,6 +17,7 @@ int main(void){
 
     a[2] = 3;
     a[1] = teste(cu, 4);
+    output(a[2]);
 
 
 }

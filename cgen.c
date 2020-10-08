@@ -170,7 +170,7 @@ char* genStmt(TreeNode *tree, THead* intercode, int argFlag){
       insereLista(intercode, addr1, addr2, addr3, storeOp, location);
       location++;
 
-      tempReg = 0;
+  
     
 
     break;
@@ -499,6 +499,7 @@ void codeGen(TreeNode * syntaxTree, char * codefile)
   assHead* assembly = initAss();
   assGen(assembly, intercodeTAD);
   printAss(assembly); 
+  //fprintf(code, "teste");
 
 }
 
