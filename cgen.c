@@ -15,11 +15,20 @@ storeInfo info;
 
 static char* cGen( TreeNode * tree, THead* intercode, int argFlag, int assignFlag);
 
-void thrownArgOp(char *reg, char *scope, THead *intercode, int location){
+void thrownArgOp(char *reg, char *scope, THead *intercode, int location, int eh_vetor, int vecOffset, char *varname){
   Address ad1, ad2, ad3;
   ad1 = initAddress(labelA, 0, reg, scope);
-  ad2 = initAddress(nop, 0, NULL, NULL);
-  ad3 = initAddress(nop, 0, NULL, NULL);
+  if(eh_vetor == 0){
+    ad2 = initAddress(nop, 0, NULL, NULL);
+    ad3 = initAddress(nop, 0, NULL, NULL);  
+  }
+  else{
+    int a=1;
+    if(st_lookup_offset(varname, "global") != -1)
+      a = 0;
+    ad2 = initAddress(numA, a,  NULL, NULL);
+    ad3 = initAddress(numA, vecOffset, NULL, NULL);
+  }
 
   insereLista(intercode, ad1, ad2, ad3, argOp, location);
   location++;
@@ -201,12 +210,6 @@ char* genStmt(TreeNode *tree, THead* intercode, int argFlag){
       insereLista(intercode, addr1, addr2, addr2, endOp, location);
       location++;
 
-      if(strcmp(tree -> attr.name, "main") == 0){
-        addr1 = initAddress(nop, 0, NULL, NULL);
-        insereLista(intercode, addr1, addr1, addr1, hltOp, location);
-        location++;
-      }
-
     break;
     case callK:
       aux1 = tree -> child[0];
@@ -231,7 +234,7 @@ char* genStmt(TreeNode *tree, THead* intercode, int argFlag){
       location++;
 
       if(argFlag == 1){
-       thrownArgOp(rot, tree -> attr.scope, intercode, location);
+       thrownArgOp(rot, tree -> attr.scope, intercode, location, 0, 0, tree -> attr.name);
         numArgs++;
         }      
 
@@ -276,7 +279,7 @@ char* genStmt(TreeNode *tree, THead* intercode, int argFlag){
 
 
       if(argFlag == 1){
-          thrownArgOp(rot, tree -> attr.scope, intercode, location);
+          thrownArgOp(rot, tree -> attr.scope, intercode, location, 0, 0, tree -> attr.name);
           numArgs++;
         }      
 
@@ -303,7 +306,7 @@ char* genStmt(TreeNode *tree, THead* intercode, int argFlag){
 
 
       if(argFlag == 1){
-          thrownArgOp(rot, tree -> attr.scope, intercode, location);
+          thrownArgOp(rot, tree -> attr.scope, intercode, location, 0, 0, tree -> attr.name);
           numArgs++;
         }    
     break;
@@ -383,7 +386,7 @@ char* genExp(TreeNode *tree, THead *intercode, int argFlag, int assignFlag){ // 
       break;
     }
     if(argFlag == 1){
-        thrownArgOp(reg3, tree -> attr.scope, intercode, location);
+        thrownArgOp(reg3, tree -> attr.scope, intercode, location, 0, 0, tree -> attr.name);
         numArgs++;
     }
     return reg3;
@@ -401,7 +404,7 @@ char* genExp(TreeNode *tree, THead *intercode, int argFlag, int assignFlag){ // 
       insereLista(intercode, addr1, addr2, addr3, immedOp, location);
       location++;
       if(argFlag == 1){
-        thrownArgOp(reg4, tree -> attr.scope, intercode, location);
+        thrownArgOp(reg4, tree -> attr.scope, intercode, location, 0, 0, tree -> attr.name);
         numArgs++;
       }
 
@@ -424,8 +427,12 @@ char* genExp(TreeNode *tree, THead *intercode, int argFlag, int assignFlag){ // 
         info.regDesloc = "$zero";
       }
       if(argFlag == 1){
-        thrownArgOp(reg, tree -> attr.scope, intercode, location);
+
+        thrownArgOp(reg, tree -> attr.scope, intercode, location, 
+          st_lookup_size(tree -> attr.name, "global") > 1 || st_lookup_size(tree -> attr.name, tree -> attr.scope) > 1 ? 1 : 0, 
+            st_lookup_offset(tree -> attr.name, tree -> attr.scope) == -1 ? st_lookup_offset(tree -> attr.name, "global"): st_lookup_offset(tree -> attr.name, tree -> attr.scope), tree -> attr.name);
         numArgs++;
+        
       }
       return reg;
     break;
@@ -448,7 +455,7 @@ char* genExp(TreeNode *tree, THead *intercode, int argFlag, int assignFlag){ // 
         info.regDesloc = regt;
       }
       if(argFlag == 1){
-        thrownArgOp(regVec, tree -> attr.scope, intercode, location);
+        thrownArgOp(regVec, tree -> attr.scope, intercode, location, 0, 0, tree -> attr.name);
         numArgs++;
       }
       return regVec;

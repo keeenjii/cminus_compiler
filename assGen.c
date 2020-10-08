@@ -13,6 +13,49 @@ static int currentSp;
 static int lastArg = 0;
 static int em_uso[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // vetor binário para indentificar quais registradores temporários estao em uso
 
+void empilha_temporario(assHead *head, int *em_uso){
+    Operando a1, a2, a3;
+    char *tempRegister;
+    //printf("Empilhamento de registradores temporários: ");
+    for(int i  = 0; i < 15; i++){
+        if(em_uso[i] == 1){
+            a1 = initOperando(reg, 0, "$sp", NULL);
+            a3 = initOperando(imed, 1, NULL, NULL);
+            insereAss(head, a1, a1, a3, addi, location++, 0);
+
+            //store do valor do registrador temporario iterado
+            tempRegister = (char*)malloc(4*sizeof(char));
+            sprintf(tempRegister, "$t%d", i);
+            //printf("%s ", tempRegister);
+            a2 = initOperando(reg, 0, tempRegister, NULL);
+            a3 = initOperando(imed, 0, NULL, NULL);
+            insereAss(head, a1, a2, a3, sw, location++, 0);
+            
+        }
+    }
+    //printf("\n");
+}
+
+void desempilha_temporario(assHead *head, int *ultimo_uso){
+    Operando a1, a2, a3;
+    char *tempRegister;
+    //printf("desempilhamento de registradores temporários: ");
+    for(int i = 14; i >= 0; i--){
+        if(em_uso[i] == 1){
+            tempRegister = (char*)malloc(4*sizeof(char));
+            //sprintf(tempRegister, "$t%d", i);        
+            a1 = initOperando(reg, 0, tempRegister, NULL);
+            a2 = initOperando(reg, 0, "$sp", NULL);
+            a3 = initOperando(imed, 0, NULL, NULL);
+            insereAss(head, a1, a2, a3, lw, location++, 0);
+            printf("%s ", tempRegister);
+            a3 = initOperando(imed, 1, NULL, NULL);
+            insereAss(head, a2, a2, a3, subi, location++, 0);
+        }
+    }
+    //printf("\n");
+}
+
 int temp_to_int(char *temp){
     if(temp[1] != 't'){ 
         return -1;  
@@ -25,6 +68,24 @@ int temp_to_int(char *temp){
         iterador++;
     }
     return (atoi(aux)%15);
+}
+
+char *nextTemp(char *temp){
+    if(temp[1] != 't'){ 
+        return temp;  
+    }
+
+    char * newTemp = (char*)malloc(5*sizeof(char));
+    char *aux = (char*)malloc(3*sizeof(char));
+    int iterador = 2;
+    while(temp[iterador] != '\0'){
+        aux[iterador-2] = temp[iterador];
+        iterador++;
+    }
+    int correcao = atoi(aux)%15;
+    correcao++;
+    sprintf(newTemp, "$t%d", correcao);
+    return newTemp;
 }
 
 char *corrigeTemp(char * temp){
@@ -284,44 +345,63 @@ void lineGen(assHead* head, TApontador node){
             int offset;
             int fixedLoc = currentSp - lastSp - 1;
             int memloc;
-            offset = st_lookup_offset(node -> addr2.contents.var.name, "global");
-            if(offset != -1){
-                if(node -> addr3.akind == nop){
-                    a1 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name), node -> addr1.contents.var.scope);
-                    a2 = initOperando(reg, 0, "$gp", node -> addr1.contents.var.scope);
-                    a3 = initOperando(imed, offset, NULL, NULL);
-                    insereAss(head, a1, a2, a3, lw, location++, 0);
-                }else{
-                    a1 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name), node -> addr1.contents.var.scope);
-                    a2 = initOperando(reg, 0, "$gp", node -> addr1.contents.var.scope);
-                    a3 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr3.contents.var.scope);
-                    insereAss(head, a1, a2, a3, add, location++, 0);
-
-                    a3 = initOperando(imed, offset, NULL, NULL);
-                    insereAss(head, a1, a1, a3, lw, location++, 0);
-
-                }
-            }else{
+            
+            if(strcmp(st_lookup_type(node -> addr2.contents.var.name, node -> addr2.contents.var.scope), "param pointer") == 0){
                 offset = st_lookup_offset(node -> addr2.contents.var.name, node -> addr2.contents.var.scope);
-
-                memloc = fixedLoc - offset;
+                memloc = fixedLoc-offset;
                 a1 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name), node -> addr1.contents.var.scope);
                 a2 = initOperando(reg, 0, "$sp", node -> addr1.contents.var.scope);
                 a3 = initOperando(imed, memloc, NULL, NULL);
                 insereAss(head, a1, a2, a3, subi, location++, 0);
-            
-                if(node -> addr3.akind == nop){
-                    a3 = initOperando(imed, 0, NULL, NULL);
-                    insereAss(head, a1, a1, a3, lw, location++, 0);
+                
+                a3 = initOperando(imed, 0, NULL, NULL);
+                insereAss(head, a1, a1, a3, lw, location++, 0);
 
+                a3 = initOperando(reg, 0, node -> addr3.contents.var.name, node -> addr3.contents.var.scope);
+                insereAss(head, a1, a1, a3, add, location++, 0);
+
+                a3 = initOperando(imed, 0, NULL, NULL);
+                insereAss(head, a1, a1, a3, lw, location++, 0);
+            }else{
+                offset = st_lookup_offset(node -> addr2.contents.var.name, "global");
+                if(offset != -1){
+                    if(node -> addr3.akind == nop){
+                        a1 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name), node -> addr1.contents.var.scope);
+                        a2 = initOperando(reg, 0, "$gp", node -> addr1.contents.var.scope);
+                        a3 = initOperando(imed, offset, NULL, NULL);
+                        insereAss(head, a1, a2, a3, lw, location++, 0);
+                    }else{
+                        a1 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name), node -> addr1.contents.var.scope);
+                        a2 = initOperando(reg, 0, "$gp", node -> addr1.contents.var.scope);
+                        a3 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr3.contents.var.scope);
+                        insereAss(head, a1, a2, a3, add, location++, 0);
+
+                        a3 = initOperando(imed, offset, NULL, NULL);
+                        insereAss(head, a1, a1, a3, lw, location++, 0);
+
+                    }
                 }else{
+                    offset = st_lookup_offset(node -> addr2.contents.var.name, node -> addr2.contents.var.scope);
+
+                    memloc = fixedLoc - offset;
                     a1 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name), node -> addr1.contents.var.scope);
-                    a2 = a1;
-                    a3 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr3.contents.var.scope);
-                    insereAss(head, a1, a2, a3, add, location++, 0);
-                    
-                    a3 = initOperando(imed, 0, NULL, NULL);
-                    insereAss(head, a1, a1, a3, lw, location++, 0);
+                    a2 = initOperando(reg, 0, "$sp", node -> addr1.contents.var.scope);
+                    a3 = initOperando(imed, memloc, NULL, NULL);
+                    insereAss(head, a1, a2, a3, subi, location++, 0);
+                
+                    if(node -> addr3.akind == nop){
+                        a3 = initOperando(imed, 0, NULL, NULL);
+                        insereAss(head, a1, a1, a3, lw, location++, 0);
+
+                    }else{
+                        a1 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name), node -> addr1.contents.var.scope);
+                        a2 = a1;
+                        a3 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr3.contents.var.scope);
+                        insereAss(head, a1, a2, a3, add, location++, 0);
+                        
+                        a3 = initOperando(imed, 0, NULL, NULL);
+                        insereAss(head, a1, a1, a3, lw, location++, 0);
+                    }
                 }
             }
 
@@ -333,55 +413,74 @@ void lineGen(assHead* head, TApontador node){
             int offsetS;
             int fixedLocS = currentSp - lastSp - 1;
             int memlocS;
-            offsetS = st_lookup_offset(node -> addr1.contents.var.name, "global");
-            if(offsetS != -1){
-                if(strcmp(node -> addr3.contents.var.name, "$zero") == 0){
-                    a1 = initOperando(reg, 0, "$gp", node -> addr1.contents.var.scope);
-                    a2 = initOperando(reg, 0, corrigeTemp(node -> addr2.contents.var.name), node -> addr2.contents.var.scope);
-                    a3 = initOperando(imed, offset, NULL, NULL);
-                    insereAss(head, a1, a2, a3, sw, location++, 0);
-                }else{
-                    a1 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr3.contents.var.scope);
-                    a2 = initOperando(reg, 0, "$gp", node -> addr1.contents.var.scope);
-                    a3 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr3.contents.var.scope);
-                    insereAss(head, a1, a2, a3, add, location++, 0);
-
-                    a3 = initOperando(imed, offset, NULL, NULL);
-                    insereAss(head, a1, a2, a3, sw, location++, 0);
-
-                }
-            }else{
+            if(strcmp(st_lookup_type(node -> addr1.contents.var.name, node -> addr1.contents.var.scope), "param pointer") == 0){
                 offsetS = st_lookup_offset(node -> addr1.contents.var.name, node -> addr1.contents.var.scope);
-
                 memlocS = fixedLocS - offsetS;
-                a1 = initOperando(reg, 0, "$sp", node -> addr1.contents.var.scope);
-                a2 = initOperando(reg, 0, "$sp", node -> addr1.contents.var.scope);
+                char * auxTemp = nextTemp(node -> addr2.contents.var.name);
+
+                a1 = initOperando(reg, 0, auxTemp, node -> addr3.contents.var.scope);
+                a2 = initOperando(reg, 0, "$sp", node -> addr3.contents.var.scope);
                 a3 = initOperando(imed, memlocS, NULL, NULL);
-                insereAss(head, a1, a2, a3, subi, location++, 0);   
-            
-                if(strcmp(node -> addr3.contents.var.name, "$zero") == 0){
-                    a3 = initOperando(imed, 0, NULL, NULL);
-                    a2 = initOperando(reg, 0, corrigeTemp(node -> addr2.contents.var.name), node -> addr2.contents.var.scope);
-                    insereAss(head, a1, a2, a3, sw, location++, 0);
+                insereAss(head, a1, a2, a3, subi, location++, 0);
 
+                a3 = initOperando(imed, 0, NULL, NULL);
+                insereAss(head, a1, a1, a3, lw, location++, 0);
 
+                a2 = initOperando(reg, 0, node -> addr3.contents.var.name, node -> addr3.contents.var.scope);
+                insereAss(head, a1, a1, a2, add, location++, 0);
 
+                a2 = initOperando(reg, 0, node -> addr2.contents.var.name, node -> addr2.contents.var.scope);
+                insereAss(head, a1, a2, a3, sw, location++, 0);
+
+            }else{
+                
+                offsetS = st_lookup_offset(node -> addr1.contents.var.name, "global");
+                if(offsetS != -1){
+                    if(strcmp(node -> addr3.contents.var.name, "$zero") == 0){
+                        a1 = initOperando(reg, 0, "$gp", node -> addr1.contents.var.scope);
+                        a2 = initOperando(reg, 0, corrigeTemp(node -> addr2.contents.var.name), node -> addr2.contents.var.scope);
+                        a3 = initOperando(imed, offsetS, NULL, NULL);
+                        insereAss(head, a1, a2, a3, sw, location++, 0);
+                    }else{
+                        a1 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr3.contents.var.scope);
+                        a2 = initOperando(reg, 0, "$gp", node -> addr1.contents.var.scope);
+                        a3 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr3.contents.var.scope);
+                        insereAss(head, a1, a2, a3, add, location++, 0);
+
+                        a3 = initOperando(imed, offsetS, NULL, NULL);
+                        insereAss(head, a1, a2, a3, sw, location++, 0);
+
+                    }
                 }else{
-                    a1 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr1.contents.var.scope);
-                    a2 = a1;
-                    a3 = initOperando(reg, 0, "$sp", node -> addr3.contents.var.scope);
-                    insereAss(head, a1, a2, a3, add, location++, 0);
-                    
-                    a3 = initOperando(imed, 0, NULL, NULL);
-                    a2 = initOperando(reg, 0, corrigeTemp(node -> addr2.contents.var.name), node -> addr2.contents.var.scope);
-                    insereAss(head, a1, a1, a3, sw, location++, 0);
-                }
-                a1 = initOperando(reg, 0, "$sp", node -> addr1.contents.var.scope);
-                a2 = initOperando(reg, 0, "$sp", node -> addr1.contents.var.scope);
-                a3 = initOperando(imed, memlocS, NULL, NULL);
-                insereAss(head, a1, a2, a3, addi, location++, 0);
-            }
+                    offsetS = st_lookup_offset(node -> addr1.contents.var.name, node -> addr1.contents.var.scope);
 
+                    memlocS = fixedLocS - offsetS;
+                    a1 = initOperando(reg, 0, "$sp", node -> addr1.contents.var.scope);
+                    a2 = initOperando(reg, 0, "$sp", node -> addr1.contents.var.scope);
+                    a3 = initOperando(imed, memlocS, NULL, NULL);
+                    insereAss(head, a1, a2, a3, subi, location++, 0);   
+                
+                    if(strcmp(node -> addr3.contents.var.name, "$zero") == 0){
+                        a3 = initOperando(imed, 0, NULL, NULL);
+                        a2 = initOperando(reg, 0, corrigeTemp(node -> addr2.contents.var.name), node -> addr2.contents.var.scope);
+                        insereAss(head, a1, a2, a3, sw, location++, 0);
+
+                    }else{
+                        a1 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr1.contents.var.scope);
+                        a2 = a1;
+                        a3 = initOperando(reg, 0, "$sp", node -> addr3.contents.var.scope);
+                        insereAss(head, a1, a2, a3, add, location++, 0);
+                        
+                        a3 = initOperando(imed, 0, NULL, NULL);
+                        a2 = initOperando(reg, 0, corrigeTemp(node -> addr2.contents.var.name), node -> addr2.contents.var.scope);
+                        insereAss(head, a1, a2, a3, sw, location++, 0);
+                    }
+                    a1 = initOperando(reg, 0, "$sp", node -> addr1.contents.var.scope);
+                    a2 = initOperando(reg, 0, "$sp", node -> addr1.contents.var.scope);
+                    a3 = initOperando(imed, memlocS, NULL, NULL);
+                    insereAss(head, a1, a2, a3, addi, location++, 0);
+                }
+            }
             em_uso[temp_to_int(node -> addr2.contents.var.name)] = 0;
 
         break;
@@ -400,10 +499,12 @@ void lineGen(assHead* head, TApontador node){
             em_uso[temp_to_int(node -> addr1.contents.var.name)] = 0;
         break;
         case retOp:
-            a1 = initOperando(reg, 0, "$ret", node -> addr1.contents.var.scope);
-            a2 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name), node -> addr1.contents.var.scope);
-            a3 = initOperando(imed, 0, NULL, NULL);
-            insereAss(head, a1, a2, a3, addi, location++, 0);
+            if(node -> addr1.akind != nop){
+                a1 = initOperando(reg, 0, "$ret", node -> addr1.contents.var.scope);
+                a2 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name), node -> addr1.contents.var.scope);
+                a3 = initOperando(imed, 0, NULL, NULL);
+                insereAss(head, a1, a2, a3, addi, location++, 0);
+            }
 
         break;
         case funOp:
@@ -411,13 +512,14 @@ void lineGen(assHead* head, TApontador node){
             a2 = initOperando(notInst, 0, NULL, NULL);
             insereAss(head, a1, a2, a2, notInst, location++, 1);
             lastSp = currentSp;
+            for(int i = 0; i < 15; i++)
+                em_uso[i] = 0;
+    
         break;
         case endOp:
             lastArg = 0;
-            if(strcmp(node -> addr1.contents.var.name, "main") != 0){
-                //operações de retorno de função(jal, desempilhar, etc)
-
-            }
+            a1 = initOperando(notInst, 0, NULL, NULL);
+            insereAss(head, a1, a1, a1, jr, location++, 0);
         break;
         case paramOp:
             a1 = initOperando(reg, 0, "$sp", node -> addr3.contents.var.name);
@@ -426,23 +528,76 @@ void lineGen(assHead* head, TApontador node){
             currentSp++;
 
 
-            char *argRegister = (char*)malloc(4*sizeof(char));
-            sprintf(argRegister, "$a%d", lastArg%5); // verificar tratamento de estoro de registradores de argumento depois
+            char *paramRegister = (char*)malloc(4*sizeof(char));
+            sprintf(paramRegister, "$a%d", lastArg%5); // verificar tratamento de estoro de registradores de argumento depois
             lastArg++;
 
-            a2 = initOperando(reg, 0, argRegister, node -> addr3.contents.var.name);
+            a2 = initOperando(reg, 0, paramRegister, node -> addr3.contents.var.name);
             a3 = initOperando(imed, 0, NULL, NULL);
             insereAss(head, a1, a2, a3, sw, location++, 0);
 
         break;
         case callOp:
+            lastArg = 0;
+            empilha_temporario(head, em_uso);
+            //empilha RA
+            a1 = initOperando(reg, 0, "$sp", NULL);
+            a2 = initOperando(imed, 1, NULL, NULL);
+            insereAss(head, a1, a1, a2, addi, location++, 0);
+
+            a2 = initOperando(reg, 0, "$ra", NULL);
+            a3 = initOperando(imed, 0, NULL, NULL);
+            insereAss(head, a1, a2, a3, sw, location++, 0);
+            ////
+            a1 = initOperando(reg, 0, node -> addr2.contents.var.name, node -> addr2.contents.var.scope);
+            a2 = initOperando(notInst, 0, NULL, NULL);
+            insereAss(head, a1, a2, a2, jal, location++, 0);
+            //desempilha RA
+            a1 = initOperando(reg, 0, "$ra", NULL);
+            a2 = initOperando(reg, 0, "$sp", NULL);
+            insereAss(head, a1, a2, a3, lw, location++, 0);
+
+            a3 = initOperando(imed, 1, NULL, NULL);
+            insereAss(head, a2, a2, a3, subi, location++, 0);
+            ///
+            desempilha_temporario(head, em_uso);
+            if(strcmp(st_lookup_type(node -> addr2.contents.var.name, "global"), "void") != 0){
+                a1 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name),node -> addr1.contents.var.scope);
+                a2 = initOperando(reg, 0, "$ret", NULL);
+                a3 = initOperando(reg, 0, "$zero", NULL);
+                insereAss(head, a1, a2, a3, addi, location++, 0);
+            }
         // Empilha todos os registradores usados.
+        //tratar e entender como funciona o registrador de endereço.
         //tratar o retorno da função, transferindo o valor do registrador de retorno pro registrador temporario
        
 
         break;
-        case argOp:
+        case argOp: ;
         // se for vetor, realizar um tratamento diferente
+            char *argRegister = (char*)malloc(4*sizeof(char));
+            sprintf(argRegister, "$a%d", lastArg%5); // verificar tratamento de estoro de registradores de argumento depois
+            lastArg++;
+            if(node -> addr2.akind == numA){// se node -> addr2.akind for 0, o escopo da variável a ser
+                int vecLoc;                 // passada como parametro é o global, e se for 1, o escopo é o atual
+                if(node -> addr2.contents.val == 0){// encontrar um jeito melhor de reconhecer o escopo global
+                    vecLoc = node -> addr3.contents.val;
+                    
+                } else {
+                    vecLoc = lastSp + node -> addr3.contents.val+1;                   
+                }
+                a1 = initOperando(reg, 0, argRegister, node -> addr1.contents.var.scope);
+                a2 = initOperando(reg, 0, "$zero", node -> addr1.contents.var.scope);
+                a3 = initOperando(imed, vecLoc, NULL, NULL);
+                insereAss(head, a1, a2, a3, addi, location++, 0);
+
+            }else {
+                a1 = initOperando(reg, 0, argRegister, node -> addr1.contents.var.scope);
+                a2 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name), node -> addr1.contents.var.scope);
+                a3 = initOperando(imed, 0, NULL, NULL);
+                insereAss(head, a1, a2, a3, addi, location++, 0);
+            }
+
         break;
         case labOp:
             a1 = initOperando(reg, 0, node -> addr1.contents.var.name, node -> addr2.contents.var.scope);
@@ -453,8 +608,8 @@ void lineGen(assHead* head, TApontador node){
 
         break;
         case hltOp:                   
-            a1 = initOperando(notInst, 0, NULL, NULL);
-            insereAss(head, a1, a1, a1, breakk, location++, 0);
+            //a1 = initOperando(notInst, 0, NULL, NULL);
+            //insereAss(head, a1, a1, a1, breakk, location++, 0);
 
         break;
         case inputOp:
@@ -507,7 +662,10 @@ void assGen(assHead* assHead, THead * intercode){
 
     aux1 = initOperando(reg, 0, "main", NULL);
     aux2 = initOperando(notInst, 0, NULL, NULL);
-    insereAss(assHead, aux1, aux2, aux2, j, location++, 0);
+    insereAss(assHead, aux1, aux2, aux2, jal, location++, 0);
+
+    aux1 = initOperando(notInst, 0, NULL, NULL);
+    insereAss(assHead, aux1, aux1, aux1, breakk, location++, 0);
 
 
     aux = intercode -> head -> prox;
