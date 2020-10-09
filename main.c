@@ -7,6 +7,7 @@
 #include "cgen.h"
 
 
+
 /* set NO_PARSE to TRUE to get a scanner-only compiler */
 #define NO_PARSE FALSE
 /* set NO_ANALYZE to TRUE to get a parser-only compiler */
@@ -17,7 +18,6 @@
 int  lineno = 0;
 FILE * source;
 FILE * listing;
-FILE * code;
 
 /* allocate and set tracing flags */
 int TraceScan = TRUE;
@@ -85,21 +85,8 @@ int main( int argc, char * argv[] ){
         }
 
     }
-    if(!Error){
-
-        char * codefile;
-        int fnlen = strcspn(pgm,".");
-        codefile = (char *) calloc(fnlen+4, sizeof(char));
-        strncpy(codefile,pgm,fnlen);
-        strcat(codefile,".cminus");
-        code = fopen(codefile,"w");
-        if (code == NULL){ 
-            printf("Unable to open %s\n",codefile);
-            exit(1);
-        }
-        codeGen(syntaxTree,codefile);
-        fclose(code);
-
+    if(!Error){    
+        codeGen(syntaxTree);
         fprintf(listing,"\nCompilação Finalizada\n");
     }
 

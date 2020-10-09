@@ -488,18 +488,15 @@ static char* cGen( TreeNode * tree, THead* intercode, int argFlag, int assignFla
   }
 }
 
-void codeGen(TreeNode * syntaxTree, char * codefile)
-{  char * s = malloc(strlen(codefile)+7);
-  strcpy(s,"File: ");
-  strcat(s,codefile);
+void codeGen(TreeNode * syntaxTree)
+{ 
   THead * intercodeTAD = initLista();
   cGen(syntaxTree, intercodeTAD, 0, 0);
   printIntercode(intercodeTAD);
-  printf("\nMontando o código assembly: \n\n");
+  printf("\nCodigo assembly gravado em asscode.txt\n");
   assHead* assembly = initAss();
   assGen(assembly, intercodeTAD);
   printAss(assembly); 
-  //fprintf(code, "teste");
 
 }
 
