@@ -44,12 +44,12 @@ void desempilha_temporario(assHead *head, int *ultimo_uso){
     for(int i = 14; i >= 0; i--){
         if(em_uso[i] == 1){
             tempRegister = (char*)malloc(4*sizeof(char));
-            //sprintf(tempRegister, "$t%d", i);        
+            sprintf(tempRegister, "$t%d", i);        
             a1 = initOperando(reg, 0, tempRegister, NULL);
             a2 = initOperando(reg, 0, "$sp", NULL);
             a3 = initOperando(imed, 0, NULL, NULL);
             insereAss(head, a1, a2, a3, lw, location++, 0);
-            printf("%s ", tempRegister);
+            //printf("%s ", tempRegister);
             a3 = initOperando(imed, 1, NULL, NULL);
             insereAss(head, a2, a2, a3, subi, location++, 0);
         }
@@ -68,7 +68,7 @@ int temp_to_int(char *temp){
         aux[iterador-2] = temp[iterador];
         iterador++;
     }
-    return (atoi(aux)%15);
+    return (atoi(aux)%17);
 }
 
 char *nextTemp(char *temp){
@@ -534,7 +534,7 @@ void lineGen(assHead* head, TApontador node){
 
 
             char *paramRegister = (char*)malloc(4*sizeof(char));
-            sprintf(paramRegister, "$a%d", lastParam%5); // verificar tratamento de estoro de registradores de argumento depois
+            sprintf(paramRegister, "$a%d", lastParam%7); // verificar tratamento de estoro de registradores de argumento depois
             lastParam++;
 
             a2 = initOperando(reg, 0, paramRegister, node -> addr3.contents.var.name);
@@ -570,7 +570,7 @@ void lineGen(assHead* head, TApontador node){
                 a1 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name),node -> addr1.contents.var.scope);
                 a2 = initOperando(reg, 0, "$ret", NULL);
                 a3 = initOperando(reg, 0, "$zero", NULL);
-                insereAss(head, a1, a2, a3, addi, location++, 0);
+                insereAss(head, a1, a2, a3, add, location++, 0);
 
                 em_uso[temp_to_int(node -> addr1.contents.var.name)] = 1;
             }
@@ -584,7 +584,7 @@ void lineGen(assHead* head, TApontador node){
         case argOp: ;
         // se for vetor, realizar um tratamento diferente
             char *argRegister = (char*)malloc(4*sizeof(char));
-            sprintf(argRegister, "$a%d", lastArg%5); // verificar tratamento de estoro de registradores de argumento depois
+            sprintf(argRegister, "$a%d", lastArg%7); // verificar tratamento de estoro de registradores de argumento depois
             lastArg++;
             if(node -> addr2.akind == numA){// se node -> addr2.akind for 0, o escopo da variável a ser
                 int vecLoc;                 // passada como parametro é o global, e se for 1, o escopo é o atual

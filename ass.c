@@ -51,7 +51,7 @@ char * printOp(Operando op){
         char * num = (char*)malloc(sizeof(char)*nDigitos(op.contents.imediato));
         sprintf(num, "%d", op.contents.imediato);
         return num;
-    } else return "--";
+    } else return " ";
 }
 
 void printAss(assHead *head){
@@ -60,7 +60,7 @@ void printAss(assHead *head){
     FILE * code = fopen("asscode.txt", "w");
     while(iterador -> location != 0){
         if(iterador -> islabel == 1){
-            fprintf(code, "\n.%s:\n", iterador -> op1.contents.var.name);
+            fprintf(code, "%s\n", iterador -> op1.contents.var.name);
         }else{
             char op[7];
             switch(iterador -> inst){
@@ -155,8 +155,9 @@ void printAss(assHead *head){
             char *pos2 = printOp(iterador -> op2);
             char *pos3 = printOp(iterador -> op3);
 
-            fprintf(code,"\t%s %s, %s, %s\n", op, pos1, pos2, pos3);
+            fprintf(code,"\t%s %s %s %s\n", op, pos1, pos2, pos3);
         }
       	iterador = iterador -> prox;
     }
+    fclose(code);
 }
