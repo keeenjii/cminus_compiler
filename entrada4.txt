@@ -14,9 +14,11 @@ int main(void){
     
     int a[10];
     int cu[20];
+    int t;
+    t = 2;
 
     a[2] = 3;
-    a[1] = teste(cu, 4);
+    a[1] = teste(cu, t);
     output(a[2]);
 
 

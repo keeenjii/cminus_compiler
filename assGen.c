@@ -13,7 +13,7 @@ static int currentSp;
 static int lastArg = 0;
 static int lastParam = 0;
 static int em_uso[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // vetor binário para indentificar quais registradores temporários estao em uso
-
+static int paramCount = 0;
 void empilha_temporario(assHead *head, int *em_uso){
     Operando a1, a2, a3;
     char *tempRegister;
@@ -516,12 +516,19 @@ void lineGen(assHead* head, TApontador node){
             a1 = initOperando(reg, 0, node -> addr2.contents.var.name, node -> addr2.contents.var.scope);
             a2 = initOperando(notInst, 0, NULL, NULL);
             insereAss(head, a1, a2, a2, notInst, location++, 1);
+
             lastSp = currentSp;
+           
             for(int i = 0; i < 15; i++)
                 em_uso[i] = 0;
     
         break;
         case endOp:
+            a1 = initOperando(reg, 0, "$sp", NULL);
+            a2 = initOperando(imed, paramCount, NULL, NULL);
+            insereAss(head, a1, a1, a2, subi, location++, 0);
+
+            paramCount = 0;
             lastParam = 0;
             a1 = initOperando(notInst, 0, NULL, NULL);
             insereAss(head, a1, a1, a1, jr, location++, 0);
@@ -532,6 +539,7 @@ void lineGen(assHead* head, TApontador node){
             insereAss(head, a1, a1, a2, addi, location++, 0);
             currentSp++;
 
+            paramCount++;
 
             char *paramRegister = (char*)malloc(4*sizeof(char));
             sprintf(paramRegister, "$a%d", lastParam%7); // verificar tratamento de estoro de registradores de argumento depois
@@ -556,6 +564,7 @@ void lineGen(assHead* head, TApontador node){
             ////
             a1 = initOperando(reg, 0, node -> addr2.contents.var.name, node -> addr2.contents.var.scope);
             a2 = initOperando(notInst, 0, NULL, NULL);
+            
             insereAss(head, a1, a2, a2, jal, location++, 0);
             //desempilha RA
             a1 = initOperando(reg, 0, "$ra", NULL);
