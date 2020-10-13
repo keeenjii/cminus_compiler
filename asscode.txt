@@ -29,7 +29,7 @@ teste
 	subi $t5 $sp 0
 	lw $t5 $t5 0
 	addi $ret $t5 0
-	subi $sp $sp 2
+	subi $sp $sp 3
 	jr      
 main
 	addi $sp $sp 10
@@ -93,5 +93,5 @@ main
 	lw $t2 $t2 0
 	addi $a0 $t2 0
 	out $a0 $zero  
-	subi $sp $sp 0
+	subi $sp $sp 31
 	jr      

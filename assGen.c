@@ -13,7 +13,7 @@ static int currentSp;
 static int lastArg = 0;
 static int lastParam = 0;
 static int em_uso[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // vetor binário para indentificar quais registradores temporários estao em uso
-static int paramCount = 0;
+int paramCount = 0;
 void empilha_temporario(assHead *head, int *em_uso){
     Operando a1, a2, a3;
     char *tempRegister;
@@ -322,6 +322,8 @@ void lineGen(assHead* head, TApontador node){
         case allocOp:
             if(strcmp(node -> addr2.contents.var.name, "global")!=0){
             currentSp+= node -> addr3.contents.val;
+            paramCount += node -> addr3.contents.val;
+
             a1 = initOperando(reg, 0, "$sp", "global");
             a2 = initOperando(reg, 0, "$sp", "global");
             a3 = initOperando(imed, node -> addr3.contents.val, NULL, NULL);
@@ -527,7 +529,7 @@ void lineGen(assHead* head, TApontador node){
             a1 = initOperando(reg, 0, "$sp", NULL);
             a2 = initOperando(imed, paramCount, NULL, NULL);
             insereAss(head, a1, a1, a2, subi, location++, 0);
-
+            printf("%d\n", paramCount);
             paramCount = 0;
             lastParam = 0;
             a1 = initOperando(notInst, 0, NULL, NULL);
