@@ -83,7 +83,7 @@ char *nextTemp(char *temp){
         aux[iterador-2] = temp[iterador];
         iterador++;
     }
-    int correcao = atoi(aux)%15;
+    int correcao = atoi(aux)%17;
     correcao++;
     sprintf(newTemp, "$t%d", correcao);
     return newTemp;
@@ -100,7 +100,7 @@ char *corrigeTemp(char * temp){
         aux[iterador-2] = temp[iterador];
         iterador++;
     }
-    int correcao = atoi(aux)%15;
+    int correcao = atoi(aux)%17;
     sprintf(newTemp, "$t%d", correcao);
     return newTemp;
 }
@@ -345,14 +345,16 @@ void lineGen(assHead* head, TApontador node){
 
         break;
         case loadOp: ;
-            if(node -> prox -> op == argOp && node -> prox -> addr2.akind == numA)
+            if(node -> prox -> op == argOp && node -> prox -> addr2.akind == numA
+                && strcmp(st_lookup_type(node -> addr2.contents.var.name, node -> addr2.contents.var.scope), "param pointer") != 0)
                break;
             else{
                 int offset;
                 int fixedLoc = currentSp - lastSp - 1;
                 int memloc;
                 
-                if(strcmp(st_lookup_type(node -> addr2.contents.var.name, node -> addr2.contents.var.scope), "param pointer") == 0){
+                if(strcmp(st_lookup_type(node -> addr2.contents.var.name, node -> addr2.contents.var.scope), "param pointer") == 0
+                && (node -> prox -> op != argOp || node -> prox -> addr2.akind != numA) ){
                     offset = st_lookup_offset(node -> addr2.contents.var.name, node -> addr2.contents.var.scope);
                     memloc = fixedLoc-offset;
                     a1 = initOperando(reg, 0, corrigeTemp(node -> addr1.contents.var.name), node -> addr1.contents.var.scope);
@@ -363,7 +365,7 @@ void lineGen(assHead* head, TApontador node){
                     a3 = initOperando(imed, 0, NULL, NULL);
                     insereAss(head, a1, a1, a3, lw, location++, 0);
 
-                    a3 = initOperando(reg, 0, node -> addr3.contents.var.name, node -> addr3.contents.var.scope);
+                    a3 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr3.contents.var.scope);
                     insereAss(head, a1, a1, a3, add, location++, 0);
 
                     a3 = initOperando(imed, 0, NULL, NULL);
@@ -433,10 +435,10 @@ void lineGen(assHead* head, TApontador node){
                 a3 = initOperando(imed, 0, NULL, NULL);
                 insereAss(head, a1, a1, a3, lw, location++, 0);
 
-                a2 = initOperando(reg, 0, node -> addr3.contents.var.name, node -> addr3.contents.var.scope);
+                a2 = initOperando(reg, 0, corrigeTemp(node -> addr3.contents.var.name), node -> addr3.contents.var.scope);
                 insereAss(head, a1, a1, a2, add, location++, 0);
 
-                a2 = initOperando(reg, 0, node -> addr2.contents.var.name, node -> addr2.contents.var.scope);
+                a2 = initOperando(reg, 0, corrigeTemp(node -> addr2.contents.var.name), node -> addr2.contents.var.scope);
                 insereAss(head, a1, a2, a3, sw, location++, 0);
 
             }else{
@@ -529,7 +531,6 @@ void lineGen(assHead* head, TApontador node){
             a1 = initOperando(reg, 0, "$sp", NULL);
             a2 = initOperando(imed, paramCount, NULL, NULL);
             insereAss(head, a1, a1, a2, subi, location++, 0);
-            printf("%d\n", paramCount);
             paramCount = 0;
             lastParam = 0;
             a1 = initOperando(notInst, 0, NULL, NULL);
@@ -593,11 +594,13 @@ void lineGen(assHead* head, TApontador node){
 
         break;
         case argOp: ;
+        //    printf("%s\n", node -> addr1.contents.var.scope);
         // se for vetor, realizar um tratamento diferente
             char *argRegister = (char*)malloc(4*sizeof(char));
             sprintf(argRegister, "$a%d", lastArg%7); // verificar tratamento de estoro de registradores de argumento depois
             lastArg++;
-            if(node -> addr2.akind == numA){// se node -> addr2.akind for 0, o escopo da variável a ser
+            if(node -> addr2.akind == numA &&
+                    strcmp(st_lookup_type(node -> ant -> addr2.contents.var.name, node -> addr1.contents.var.scope), "param pointer") != 0){// se node -> addr2.akind for 0, o escopo da variável a ser
                 int vecLoc;                 // passada como parametro é o global, e se for 1, o escopo é o atual
                 if(node -> addr2.contents.val == 0){// encontrar um jeito melhor de reconhecer o escopo global
                     vecLoc = node -> addr3.contents.val;

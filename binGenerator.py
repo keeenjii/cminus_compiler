@@ -105,6 +105,7 @@ with open('binarycode.txt', 'w') as binaryFile:
                                                                                                                             '//{}'.format(inst[0])))
                         lineNumber+=1 
             else:
+               
                 binaryFile.write("%s\n" % 'mem_instrucao[{}] = {{ 6\'d{}, 5\'d{}, 5\'d{}, 5\'d{}, 11\'d0 }}{:>10}'.format(lineNumber,
                                                                                                                           opcode.index(inst[0]),
                                                                                                                           register.index(inst[2]),

@@ -4,7 +4,7 @@ bison -d -v scanner.y
 
 gcc -c *.c
 gcc -o scanner *.o -lm
-./scanner entrada4.txt
+./scanner entrada.txt
 python binGenerator.py
 
 rm scanner.tab.c

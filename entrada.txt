@@ -2,8 +2,6 @@
    uma matriz com dez elementos. */
 
 int vet[ 10 ];
-int teste;
-int cu;
 
 int minloc ( int a[], int low, int high )
 {	int i; int x; int k;
@@ -48,12 +46,5 @@ void main(void)
 		i = i + 1;
 	}
 }
-
-			
-
-
-
-
-
 
 			

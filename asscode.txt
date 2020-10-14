@@ -1,97 +1,307 @@
-	addi $sp $zero 11
+	addi $sp $zero 9
 	addi $gp $zero 0
 	jal main    
 	break      
-teste
+minloc
 	addi $sp $sp 1
 	sw $sp $a0 0
 	addi $sp $sp 1
 	sw $sp $a1 0
 	addi $sp $sp 1
+	sw $sp $a2 0
+	addi $sp $sp 1
+	addi $sp $sp 1
+	addi $sp $sp 1
 	subi $t0 $sp 0
 	lw $t0 $t0 0
-	addi $t1 $zero 1
+	subi $t1 $sp 4
+	lw $t1 $t1 0
 	add $t0 $t1 $zero
 	subi $sp $sp 0
 	sw $sp $t0 0
 	addi $sp $sp 0
-	addi $t2 $zero 4
+	subi $t2 $sp 1
+	lw $t2 $t2 0
+	subi $t3 $sp 4
+	lw $t3 $t3 0
+	subi $t4 $sp 5
+	lw $t4 $t4 0
+	add $t4 $t4 $t3
+	lw $t4 $t4 0
+	add $t2 $t4 $zero
+	subi $sp $sp 1
+	sw $sp $t2 0
+	addi $sp $sp 1
+	subi $t5 $sp 2
+	lw $t5 $t5 0
+	subi $t6 $sp 4
+	lw $t6 $t6 0
+	addi $t7 $zero 1
+	add $t8 $t6 $t7
+	add $t5 $t8 $zero
+	subi $sp $sp 2
+	sw $sp $t5 0
+	addi $sp $sp 2
+label1
+	subi $t9 $sp 2
+	lw $t9 $t9 0
+	subi $t10 $sp 3
+	lw $t10 $t10 0
+	cmp $t11 $t9 $t10
+	eq $t11 $t11 $zero
+	beq $t11 $zero label2
+	subi $t12 $sp 2
+	lw $t12 $t12 0
+	subi $t13 $sp 5
+	lw $t13 $t13 0
+	add $t13 $t13 $t12
+	lw $t13 $t13 0
+	subi $t14 $sp 1
+	lw $t14 $t14 0
+	cmp $t15 $t13 $t14
+	eq $t15 $t15 $zero
+	beq $t15 $zero label0
+	subi $t16 $sp 1
+	lw $t16 $t16 0
+	subi $t0 $sp 2
+	lw $t0 $t0 0
+	subi $t1 $sp 5
+	lw $t1 $t1 0
+	add $t1 $t1 $t0
+	lw $t1 $t1 0
+	add $t16 $t1 $zero
+	subi $sp $sp 1
+	sw $sp $t16 0
+	addi $sp $sp 1
+	subi $t2 $sp 0
+	lw $t2 $t2 0
 	subi $t3 $sp 2
 	lw $t3 $t3 0
-	add $t3 $t3 $t2
-	lw $t3 $t3 0
-	addi $t4 $zero 2
-	add $t3 $t4 $zero
+	add $t2 $t3 $zero
+	subi $sp $sp 0
+	sw $sp $t2 0
+	addi $sp $sp 0
+label0
 	subi $t4 $sp 2
 	lw $t4 $t4 0
-	add $t4 $t4 $t2
-	sw $t4 $t3 0
-	subi $t5 $sp 0
+	subi $t5 $sp 2
 	lw $t5 $t5 0
-	addi $ret $t5 0
-	subi $sp $sp 3
+	addi $t6 $zero 1
+	add $t7 $t5 $t6
+	add $t4 $t7 $zero
+	subi $sp $sp 2
+	sw $sp $t4 0
+	addi $sp $sp 2
+	j label1    
+label2
+	subi $t8 $sp 0
+	lw $t8 $t8 0
+	addi $ret $t8 0
+	subi $sp $sp 6
 	jr      
-main
-	addi $sp $sp 10
-	addi $sp $sp 20
+sort
 	addi $sp $sp 1
-	subi $t6 $sp 0
-	lw $t6 $t6 0
-	addi $t7 $zero 2
-	add $t6 $t7 $zero
-	subi $sp $sp 0
-	sw $sp $t6 0
-	addi $sp $sp 0
-	addi $t8 $zero 2
-	subi $t9 $sp 30
-	add $t9 $t9 $t8
+	sw $sp $a0 0
+	addi $sp $sp 1
+	sw $sp $a1 0
+	addi $sp $sp 1
+	sw $sp $a2 0
+	addi $sp $sp 1
+	addi $sp $sp 1
+	subi $t9 $sp 1
 	lw $t9 $t9 0
-	addi $t10 $zero 3
+	subi $t10 $sp 3
+	lw $t10 $t10 0
 	add $t9 $t10 $zero
-	subi $sp $sp 30
-	add $t8 $t8 $sp
-	sw $t8 $t9 0
-	addi $sp $sp 30
-	addi $t11 $zero 1
-	subi $t12 $sp 30
+	subi $sp $sp 1
+	sw $sp $t9 0
+	addi $sp $sp 1
+label3
+	subi $t11 $sp 1
+	lw $t11 $t11 0
+	subi $t12 $sp 2
+	lw $t12 $t12 0
+	addi $t13 $zero 1
+	sub $t14 $t12 $t13
+	cmp $t15 $t11 $t14
+	eq $t15 $t15 $zero
+	beq $t15 $zero label4
+	addi $sp $sp 1
+	subi $t16 $sp 1
+	lw $t16 $t16 0
+	subi $t0 $sp 5
+	lw $t0 $t0 0
+	addi $a0 $t0 0
+	subi $t1 $sp 2
+	lw $t1 $t1 0
+	addi $a1 $t1 0
+	subi $t2 $sp 3
+	lw $t2 $t2 0
+	addi $a2 $t2 0
+	addi $sp $sp 1
+	sw $sp $t0 0
+	addi $sp $sp 1
+	sw $sp $t1 0
+	addi $sp $sp 1
+	sw $sp $t2 0
+	addi $sp $sp 1
+	sw $sp $ra 0
+	jal minloc    
+	lw $ra $sp 0
+	subi $sp $sp 1
+	lw $t2 $sp 0
+	subi $sp $sp 1
+	lw $t1 $sp 0
+	subi $sp $sp 1
+	lw $t0 $sp 0
+	subi $sp $sp 1
+	add $t3 $ret $zero
+	add $t16 $t3 $zero
+	subi $sp $sp 1
+	sw $sp $t16 0
+	addi $sp $sp 1
+	subi $t4 $sp 0
+	lw $t4 $t4 0
+	subi $t5 $sp 1
+	lw $t5 $t5 0
+	subi $t6 $sp 5
+	lw $t6 $t6 0
+	add $t6 $t6 $t5
+	lw $t6 $t6 0
+	add $t4 $t6 $zero
+	subi $sp $sp 0
+	sw $sp $t4 0
+	addi $sp $sp 0
+	subi $t7 $sp 1
+	lw $t7 $t7 0
+	subi $t8 $sp 5
+	lw $t8 $t8 0
+	add $t8 $t8 $t7
+	lw $t8 $t8 0
+	subi $t9 $sp 2
+	lw $t9 $t9 0
+	subi $t10 $sp 5
+	lw $t10 $t10 0
+	add $t10 $t10 $t9
+	lw $t10 $t10 0
+	add $t8 $t10 $zero
+	subi $t9 $sp 5
+	lw $t9 $t9 0
+	add $t9 $t9 $t7
+	sw $t9 $t8 0
+	subi $t11 $sp 2
+	lw $t11 $t11 0
+	subi $t12 $sp 5
+	lw $t12 $t12 0
 	add $t12 $t12 $t11
 	lw $t12 $t12 0
-	addi $a0 $zero 25
-	subi $t14 $sp 0
+	subi $t13 $sp 0
+	lw $t13 $t13 0
+	add $t12 $t13 $zero
+	subi $t13 $sp 5
+	lw $t13 $t13 0
+	add $t13 $t13 $t11
+	sw $t13 $t12 0
+	subi $t14 $sp 2
 	lw $t14 $t14 0
+	subi $t15 $sp 2
+	lw $t15 $t15 0
+	addi $t16 $zero 1
+	add $t0 $t15 $t16
+	add $t14 $t0 $zero
+	subi $sp $sp 2
+	sw $sp $t14 0
+	addi $sp $sp 2
+	j label3    
+label4
+	subi $sp $sp 6
+	jr      
+main
+	addi $sp $sp 1
+	subi $t1 $sp 0
+	lw $t1 $t1 0
+	addi $t2 $zero 0
+	add $t1 $t2 $zero
+	subi $sp $sp 0
+	sw $sp $t1 0
+	addi $sp $sp 0
+label5
+	subi $t3 $sp 0
+	lw $t3 $t3 0
+	addi $t4 $zero 10
+	cmp $t5 $t3 $t4
+	eq $t5 $t5 $zero
+	beq $t5 $zero label6
+	subi $t6 $sp 0
+	lw $t6 $t6 0
+	add $t7 $gp $t6
+	lw $t7 $t7 0
+	in      
+	addi $t8 $RE 0
+	add $t7 $t8 $zero
+	add $t6 $gp $t6
+	sw $t6 $gp 0
+	subi $t9 $sp 0
+	lw $t9 $t9 0
+	subi $t10 $sp 0
+	lw $t10 $t10 0
+	addi $t11 $zero 1
+	add $t12 $t10 $t11
+	add $t9 $t12 $zero
+	subi $sp $sp 0
+	sw $sp $t9 0
+	addi $sp $sp 0
+	j label5    
+label6
+	addi $a0 $zero 0
+	addi $t14 $zero 0
 	addi $a1 $t14 0
+	addi $t15 $zero 10
+	addi $a2 $t15 0
 	addi $sp $sp 1
-	sw $sp $t8 0
-	addi $sp $sp 1
-	sw $sp $t11 0
-	addi $sp $sp 1
-	sw $sp $t12 0
+	sw $sp $t6 0
 	addi $sp $sp 1
 	sw $sp $t14 0
 	addi $sp $sp 1
 	sw $sp $ra 0
-	jal teste    
+	jal sort    
 	lw $ra $sp 0
 	subi $sp $sp 1
 	lw $t14 $sp 0
 	subi $sp $sp 1
-	lw $t12 $sp 0
+	lw $t6 $sp 0
 	subi $sp $sp 1
-	lw $t11 $sp 0
-	subi $sp $sp 1
-	lw $t8 $sp 0
-	subi $sp $sp 1
-	add $t0 $ret $zero
-	add $t12 $t0 $zero
-	subi $sp $sp 30
-	add $t11 $t11 $sp
-	sw $t11 $t12 0
-	addi $sp $sp 30
-	addi $t1 $zero 2
-	subi $t2 $sp 30
-	add $t2 $t2 $t1
+	subi $t0 $sp 0
+	lw $t0 $t0 0
+	addi $t1 $zero 0
+	add $t0 $t1 $zero
+	subi $sp $sp 0
+	sw $sp $t0 0
+	addi $sp $sp 0
+label7
+	subi $t2 $sp 0
 	lw $t2 $t2 0
-	addi $a0 $t2 0
+	addi $t3 $zero 10
+	cmp $t4 $t2 $t3
+	eq $t4 $t4 $zero
+	beq $t4 $zero label8
+	subi $t5 $sp 0
+	lw $t5 $t5 0
+	add $t6 $gp $t5
+	lw $t6 $t6 0
+	addi $a0 $t6 0
 	out $a0 $zero  
-	subi $sp $sp 31
+	subi $t8 $sp 0
+	lw $t8 $t8 0
+	subi $t9 $sp 0
+	lw $t9 $t9 0
+	addi $t10 $zero 1
+	add $t11 $t9 $t10
+	add $t8 $t11 $zero
+	subi $sp $sp 0
+	sw $sp $t8 0
+	addi $sp $sp 0
+	j label7    
+label8
+	subi $sp $sp 1
 	jr      

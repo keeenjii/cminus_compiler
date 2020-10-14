@@ -427,9 +427,16 @@ char* genExp(TreeNode *tree, THead *intercode, int argFlag, int assignFlag){ // 
         info.regDesloc = "$zero";
       }
       if(argFlag == 1){
-
+        int aux = 0;
+        if(st_lookup_size(tree -> attr.name, "global") > 1 || 
+            st_lookup_size(tree -> attr.name, tree -> attr.scope) > 1 ||
+              strcmp(st_lookup_type(tree -> attr.name, tree -> attr.scope), "param pointer") == 0){
+          aux = 1;
+        }
+        
+        
         thrownArgOp(reg, tree -> attr.scope, intercode, location, 
-          st_lookup_size(tree -> attr.name, "global") > 1 || st_lookup_size(tree -> attr.name, tree -> attr.scope) > 1 ? 1 : 0, 
+          aux, 
             st_lookup_offset(tree -> attr.name, tree -> attr.scope) == -1 ? st_lookup_offset(tree -> attr.name, "global"): st_lookup_offset(tree -> attr.name, tree -> attr.scope), tree -> attr.name);
         numArgs++;
         
