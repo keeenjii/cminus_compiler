@@ -1,0 +1,25 @@
+int teste1;
+   int teste2[10];
+int teste3;
+
+int teste(int a[], int b){
+    int c;
+    c = 1;
+    a[4] = 2;
+    return c;
+}
+
+
+int main(void){
+    
+    int a[10];
+    int cu[20];
+    int t;
+    t = 2;
+
+    a[2] = 3;
+    a[1] = teste(cu, t);
+    output(a[2]);
+
+
+}

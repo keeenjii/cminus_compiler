@@ -1,0 +1,14 @@
+/*int gcd (int u, int v){
+	if ( v == 0 ) return u;
+	else return gcd(v, u-u/v*v);
+}*/
+
+int teste (int x, int y){
+	return x + y;
+}
+
+void main(void){
+	int x; 
+	x = 4;
+	output(teste(x, 6)); 
+}

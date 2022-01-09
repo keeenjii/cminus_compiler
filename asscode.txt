@@ -1,0 +1,114 @@
+	addi $sp $zero -1
+	addi $gp $zero 0
+	jal main    
+	break      
+gcd
+	addi $sp $sp 1
+	sw $sp $a0 0
+	addi $sp $sp 1
+	sw $sp $a1 0
+	subi $t0 $sp 0
+	lw $t0 $t0 0
+	addi $t1 $zero 0
+	eq $t2 $t0 $t1
+	beq $t2 $zero label0
+	subi $t3 $sp 1
+	lw $t3 $t3 0
+	addi $ret $t3 0
+	j label1    
+label0
+	subi $t4 $sp 0
+	lw $t4 $t4 0
+	addi $a0 $t4 0
+	subi $t5 $sp 1
+	lw $t5 $t5 0
+	subi $t6 $sp 1
+	lw $t6 $t6 0
+	subi $t7 $sp 0
+	lw $t7 $t7 0
+	div   $t6 $t7
+	add $t8 $LO $zero
+	subi $t9 $sp 0
+	lw $t9 $t9 0
+	mult   $t8 $t9
+	add $t10 $LO $zero
+	sub $t11 $t5 $t10
+	addi $a1 $t11 0
+	addi $sp $sp 1
+	sw $sp $t3 0
+	addi $sp $sp 1
+	sw $sp $t4 0
+	addi $sp $sp 1
+	sw $sp $t11 0
+	addi $sp $sp 1
+	sw $sp $ra 0
+	jal gcd    
+	lw $ra $sp 0
+	subi $sp $sp 1
+	lw $t11 $sp 0
+	subi $sp $sp 1
+	lw $t4 $sp 0
+	subi $sp $sp 1
+	lw $t3 $sp 0
+	subi $sp $sp 1
+	add $t12 $ret $zero
+	addi $ret $t12 0
+label1
+	subi $sp $sp 2
+	jr      
+main
+	addi $sp $sp 1
+	addi $sp $sp 1
+	addi $sp $sp 1
+	subi $t13 $sp 2
+	lw $t13 $t13 0
+	in      
+	addi $t14 $RE 0
+	add $t13 $t14 $zero
+	subi $sp $sp 2
+	sw $sp $t13 0
+	addi $sp $sp 2
+	subi $t15 $sp 1
+	lw $t15 $t15 0
+	in      
+	addi $t16 $RE 0
+	add $t15 $t16 $zero
+	subi $sp $sp 1
+	sw $sp $t15 0
+	addi $sp $sp 1
+	subi $t0 $sp 0
+	lw $t0 $t0 0
+	subi $t1 $sp 2
+	lw $t1 $t1 0
+	addi $a0 $t1 0
+	subi $t2 $sp 1
+	lw $t2 $t2 0
+	addi $a1 $t2 0
+	addi $sp $sp 1
+	sw $sp $t0 0
+	addi $sp $sp 1
+	sw $sp $t1 0
+	addi $sp $sp 1
+	sw $sp $t2 0
+	addi $sp $sp 1
+	sw $sp $ra 0
+	jal gcd    
+	lw $ra $sp 0
+	subi $sp $sp 1
+	lw $t2 $sp 0
+	subi $sp $sp 1
+	lw $t1 $sp 0
+	subi $sp $sp 1
+	lw $t0 $sp 0
+	subi $sp $sp 1
+	add $t3 $ret $zero
+	add $t0 $t3 $zero
+	subi $sp $sp 0
+	sw $sp $t0 0
+	addi $sp $sp 0
+	subi $t4 $sp 0
+	lw $t4 $t4 0
+	addi $a0 $t4 0
+	out $a0 $zero  
+	subi $sp $sp 3
+	jr      
